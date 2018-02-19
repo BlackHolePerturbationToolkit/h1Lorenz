@@ -13,6 +13,9 @@
 #include <string.h>
 #include <hdf5.h>
 #include <hdf5_hl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "GSF_ecc.h"
 #include "sources.h"
 #include "Runge-Kutta.h"
@@ -317,10 +320,8 @@ int main(int argc, char *argv[])
 				calculate_scaling_coefficients(&n_mode, &orbit);
 
 				rescale_the_field(&lm_mode, &n_mode, &orbit);
-				
-				if(input_src == 1) calculate_h1_R_on_grid(&n_mode, &orbit);
-
-			//	test_for_convergence(&convergence, &lm_mode, &n_mode,  &orbit, abs_n_max);
+								
+				// Do not perform any convergence testing (this is a relic of the eccentric orbit piece of the code)
 				convergence = 1;
 				
 				if(l >= 1 && output_h1){
@@ -331,8 +332,10 @@ int main(int argc, char *argv[])
 
 					int nf = cset->num_coupled_fields;
 
-					// Create a new file using default properties. 
+					// Create a new directory for the data and open the HDF5 file using default properties. 
 					char fileloc[50];
+					sprintf(fileloc, "data/fields_r%d", (int)p);
+					mkdir(fileloc, 0700);
 					sprintf(fileloc, "data/fields_r%d/h1-l%dm%d.h5", (int)p, l, m);
 
 					file_id = H5Fcreate(fileloc, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
