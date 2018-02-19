@@ -145,10 +145,10 @@ int inner_outer_diff_vs_jump(struct lm_mode_data *lm_mode, struct orbital_params
 
 	}else{
 
-		double diff_R1 = cabs(1.0 - pow(contra_ur/(f_p*contra_ut),2.0)) * 1.0/f_p * cabs(lm_mode->h_out_rs_deriv[0][i] - lm_mode->h_in_rs_deriv[0][i]);
+		double diff_R1 = fabs(1.0 - pow(contra_ur/(f_p*contra_ut),2.0)) * 1.0/f_p * cabs(lm_mode->h_out_rs_deriv[0][i] - lm_mode->h_in_rs_deriv[0][i]);
 		double jump_R1 = cabs(-4.0 * 4.0 * M_PI /(E * pow(r_p,3.0)) * (2.0*pow(E,2.0)*r_p*r_p - f_p*r_p*r_p - pow(L,2.0)*f_p)*normalized_associated_legendre_P(l,m,M_PI/2.0) * cexp(-I *m *phi_p));
 
-		double diff_R3 = cabs(1.0 - pow(contra_ur/(f_p*contra_ut),2.0)) * 1.0/f_p * cabs(lm_mode->h_out_rs_deriv[1][i] - lm_mode->h_in_rs_deriv[1][i]);
+		double diff_R3 = fabs(1.0 - pow(contra_ur/(f_p*contra_ut),2.0)) * 1.0/f_p * cabs(lm_mode->h_out_rs_deriv[1][i] - lm_mode->h_in_rs_deriv[1][i]);
 		double jump_R3 = cabs(-4.0 * 4.0 * M_PI / (E * pow(r_p,3.0)) * (r_p*r_p + pow(L,2.0)) * normalized_associated_legendre_P(l,m,M_PI/2.0) * cexp(-I*m*phi_p));
 
 

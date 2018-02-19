@@ -151,7 +151,7 @@ double normalized_associated_legendre_P(int l, int m, double theta)		//FIXME thi
 	}
 
 	if(m >= 0) return result.val;
-	else return pow(-1.0,fabs(m))*result.val;
+	else return pow(-1.0, abs(m))*result.val;
 }
 
 
@@ -177,7 +177,7 @@ double associated_legendre_P(int l, int m, double theta)		//FIXME this function 
 	}
 
 	if(m >= 0) return result.val;
-	else return pow(-1.0,fabs(m))*result.val;
+	else return pow(-1.0, abs(m))*result.val;
 }
 
 

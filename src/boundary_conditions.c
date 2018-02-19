@@ -639,9 +639,9 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			int lowest_power 	= (int)round((GSL_REAL(gsl_vector_complex_get (eigenvalues, 4))));
 
 
-			int highest_l 		= (int)round((-1.0 + sqrt(1.0 + 4.0*fabs(highest_power)))/2.0);
-			int middle_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*fabs(middle_power)))/2.0);
-			int lowest_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*fabs(lowest_power)))/2.0);
+			int highest_l 		= (int)round((-1.0 + sqrt(1.0 + 4.0*abs(highest_power)))/2.0);
+			int middle_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*abs(middle_power)))/2.0);
+			int lowest_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*abs(lowest_power)))/2.0);
 
 
 			gsl_matrix_complex_transpose(eigenvectors);
@@ -992,8 +992,8 @@ void odd_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			int lowest_power 	= (int)round((GSL_REAL(gsl_vector_complex_get (eigenvalues, 1))));
 
 	
-			int highest_l 		= (int)round((-1.0 + sqrt(1.0 + 4.0*fabs(highest_power)))/2.0);
-			int lowest_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*fabs(lowest_power)))/2.0);
+			int highest_l 		= (int)round((-1.0 + sqrt(1.0 + 4.0*abs(highest_power)))/2.0);
+			int lowest_l		= (int)round((-1.0 + sqrt(1.0 + 4.0*abs(lowest_power)))/2.0);
 
 
 			gsl_matrix_complex_transpose(eigenvectors);
