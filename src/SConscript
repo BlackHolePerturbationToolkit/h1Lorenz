@@ -1,0 +1,30 @@
+# GSF_circ_output: code to compute the first-order in the mass ratio Lorenz-gauge metric perturbation from a particle in a circular orbit about a Schwarzschild black hole
+# Copyright (C) 2017  Niels Warburton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import os
+env = Environment()
+
+env['ENV']['TERM'] = os.environ['TERM']
+
+env['LIBPATH']  = ['']
+env['LIBS']     = ['gsl' , 'gslcblas', 'fftw3', 'config++']
+env['CXX']      = 'g++'
+env['CPPPATH']  = ['../include']
+env['CXXFLAGS'] = ['-std=c++14', '-Wall', '-Wno-unused-variable', '-g', '-O2']
+
+sources = ['GSF_ecc.c', 'Runge-Kutta.c', 'SF_data.c', 'array_handling.c', 'beta_tensor.c', 'boundary_conditions.c', 'convergence_tests.c', 'error_estimate.c', 'file_output.c', 'gauge_fields.c', 'gauge_fields_on_grid.c', 'grid.c', 'h1R_on_grid.c', 'libSch.c', 'math_funcs.c', 'ode_systems.c', 'reg_params.c', 'regularize.c', 'scaling_coefficients.c', 'self-force.c', 'sources.c', 'static_monopole.c']
+
+env.Program('../GSF_circ_output', sources)
