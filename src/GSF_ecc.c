@@ -20,7 +20,6 @@
 #include "ode_systems.h"
 #include "gauge_fields.h"
 #include "gauge_fields_on_grid.h"
-#include "self_force.h"
 #include "static_monopole.h"
 #include "convergence_tests.h"
 #include "file_output.h"
@@ -28,7 +27,7 @@
 #include "h1R_on_grid.h"
 
 double p 		= 0.0;
-double e 		= 0.0;
+double e 		= 0.0;					// Although this code has a few routines that work for eccentric orbits, in general it only works for circular ones
 
 double M 		= 1.0;
 int l_min 		= 2;
@@ -38,7 +37,7 @@ int abs_n_max 	= 20;	//!< The absolute maximum n that will be computed. The code
 int n_min		= 0;			
 
 double MATCHING_INTEGRATION_ACCURACY 		= 1e-12;		//!< Sets the accuracy on the integration that calculates the scaling coefficients (method of EHS)
-const double RUNGE_KUTTA_ACCURACY 			= 1e-13; 		//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
+const double RUNGE_KUTTA_ACCURACY 			= 1e-12; 		//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
 const double DESIRED_INVERT_ACCURACY 		= 1e-12;		//!< Sets the desired accuacy on the tortoise inverter
 const double DESIRED_FUNCTION_ACCURACY 		= 1e-12;		//!< Sets the desired function accuracy for the wrappers around various GSL functions
 
@@ -70,7 +69,6 @@ void 	setup_lm_mode_data_structure(struct lm_mode_data *lm_mode, int l, int m);
 void 	free_n_mode_data_structure(struct n_mode_data *n_mode, struct coupled_set *cset, struct orbital_params *orbit);
 struct 	lm_mode_data* pick_lm_mode(struct lm_mode_data** lm_modes);
 void	free_lm_mode_data_structure(struct lm_mode_data *lm_mode);
-void 	read_in_hP_gauge(struct orbital_params *orbit);
 int 	gamma_to_l(int gamma);
 void 	*counter_routine(void * );
 void 	init_counter( MPI_Comm comm, MPI_Comm *counter_comm_p ) ;
@@ -123,9 +121,6 @@ int main(int argc, char *argv[])
 	
 	// Load the radial grid
 	orbit.gridsize = readin_grid(p, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
-	
-	//read in the data for the gauge fields
-	read_in_hP_gauge(&orbit);
 
 	if(provided == MPI_THREAD_MULTIPLE){
 		if(myid == 0) printf("\nMPI multithreading available: multithreading the lm mode counter.\n\n");
@@ -181,8 +176,8 @@ int main(int argc, char *argv[])
 	cset_even.in_bc_func					= &even_in_bcs;
 	cset_even.ode_system 					= &even_ode_system;
 	cset_even.construct_gauge_fields 		= &construct_R2_R4_gauge_fields;
-	cset_even.construct_inner_fields		= &construct_even_modes_from_inner_fields;
-	cset_even.construct_outer_fields		= &construct_even_modes_from_outer_fields;
+//	cset_even.construct_inner_fields		= &construct_even_modes_from_inner_fields;
+//	cset_even.construct_outer_fields		= &construct_even_modes_from_outer_fields;
 	cset_even.construct_gauge_fields_on_grid = &construct_R2_R4_gauge_fields_on_grid;
 
 	cset_odd.num_coupled_fields 			= 2;
@@ -194,8 +189,8 @@ int main(int argc, char *argv[])
 	cset_odd.in_bc_func						= &odd_in_bcs;
 	cset_odd.ode_system 					= &odd_ode_system;
 	cset_odd.construct_gauge_fields			= &construct_R8_gauge_field;
-	cset_odd.construct_inner_fields			= &construct_odd_modes_from_inner_fields;
-	cset_odd.construct_outer_fields			= &construct_odd_modes_from_outer_fields;
+//	cset_odd.construct_inner_fields			= &construct_odd_modes_from_inner_fields;
+//	cset_odd.construct_outer_fields			= &construct_odd_modes_from_outer_fields;
 	cset_odd.construct_gauge_fields_on_grid	= &construct_R8_gauge_field_on_grid;
 
 	cset_odd_dipole.num_coupled_fields 		= 1;
@@ -206,8 +201,8 @@ int main(int argc, char *argv[])
 	cset_odd_dipole.in_bc_func				= &odd_dipole_in_bcs;
 	cset_odd_dipole.ode_system 				= &odd_dipole_ode_system;
 	cset_odd_dipole.construct_gauge_fields	= &construct_R8_gauge_field;
-	cset_odd_dipole.construct_inner_fields	= &construct_odd_dipole_from_inner_fields;
-	cset_odd_dipole.construct_outer_fields	= &construct_odd_dipole_from_outer_fields;
+//	cset_odd_dipole.construct_inner_fields	= &construct_odd_dipole_from_inner_fields;
+//	cset_odd_dipole.construct_outer_fields	= &construct_odd_dipole_from_outer_fields;
 	cset_odd_dipole.construct_gauge_fields_on_grid	= &construct_R8_gauge_field_on_grid;
 
 	cset_monopole.num_coupled_fields 		= 3;
@@ -220,8 +215,8 @@ int main(int argc, char *argv[])
 	cset_monopole.in_bc_func				= monopole_in_bcs;
 	cset_monopole.ode_system				= monopole_ode_system;
 	cset_monopole.construct_gauge_fields 	= &construct_R2_R4_gauge_fields;
-	cset_monopole.construct_inner_fields	= &construct_monopole_from_inner_fields;
-	cset_monopole.construct_outer_fields	= &construct_monopole_from_outer_fields;
+//	cset_monopole.construct_inner_fields	= &construct_monopole_from_inner_fields;
+//	cset_monopole.construct_outer_fields	= &construct_monopole_from_outer_fields;
 
 	cset_even_dipole.num_coupled_fields 	= 4;
 	cset_even_dipole.num_gauge_fields		= 2;
@@ -234,8 +229,8 @@ int main(int argc, char *argv[])
 	cset_even_dipole.in_bc_func				= even_dipole_in_bcs;
 	cset_even_dipole.ode_system				= even_dipole_ode_system;
 	cset_even_dipole.construct_gauge_fields = &construct_R2_R4_gauge_fields;
-	cset_even_dipole.construct_inner_fields	= &construct_even_dipole_from_inner_fields;
-	cset_even_dipole.construct_outer_fields	= &construct_even_dipole_from_outer_fields;
+//	cset_even_dipole.construct_inner_fields	= &construct_even_dipole_from_inner_fields;
+//	cset_even_dipole.construct_outer_fields	= &construct_even_dipole_from_outer_fields;
 	cset_even_dipole.construct_gauge_fields_on_grid = &construct_R2_R4_gauge_fields_on_grid;
 
 	cset_even_static.num_coupled_fields		= 3;
@@ -248,8 +243,8 @@ int main(int argc, char *argv[])
 	cset_even_static.in_bc_func				= even_static_in_bcs;
 	cset_even_static.ode_system				= even_static_ode_system;
 	cset_even_static.construct_gauge_fields	= &construct_R6_R7_R2_R4_gauge_fields;
-	cset_even_static.construct_inner_fields	= &construct_even_modes_from_inner_fields;
-	cset_even_static.construct_outer_fields	= &construct_even_modes_from_outer_fields;
+//	cset_even_static.construct_inner_fields	= &construct_even_modes_from_inner_fields;
+//	cset_even_static.construct_outer_fields	= &construct_even_modes_from_outer_fields;
 	cset_even_static.construct_gauge_fields_on_grid	= &construct_R6_R7_R2_R4_gauge_fields_on_grid;
 
 	init_counter( MPI_COMM_WORLD, &counter_comm );
@@ -406,23 +401,6 @@ int main(int argc, char *argv[])
 							n_mode.inhom_data[0][2][i] 	+= -2.0*A/(r*r*r);
 						}
 					}
-
-					// Output the inhomogeneous data
-					/*nf = cset->num_coupled_fields + cset->num_gauge_fields;
-					dims[0] = orbit.gridsize;
-					dims[1] = 4*nf;
-					data = malloc(sizeof(double) * 4*nf*orbit.gridsize);
-					for(i = 0; i < orbit.gridsize; i++){						
-						for(j = 0; j < nf; j++){
-							data[i*4*nf + j*4 + 0] = n_mode.inhom_data[j][0][i];
-							data[i*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][i];
-							data[i*4*nf + j*4 + 2] = n_mode.inhom_data[j][2][i];
-							data[i*4*nf + j*4 + 3] = n_mode.inhom_data[j][3][i];					
-						}
-					}
-
-					H5LTmake_dataset_double(file_id, "inhom", 2, dims, data);
-					free(data);*/
 					
 					
 					// Output the inhomogenous data to the left of the particle
@@ -475,25 +453,11 @@ int main(int argc, char *argv[])
 					
 
 				}
-				
-				calculate_tensor_lm_mode_contribution_to_hR_and_FrR(l_max, huulR_tensor, FrlR_tensor, &n_mode, &orbit);
 
 				free_n_mode_data_structure(&n_mode, cset, &orbit);
 
 			}
-			//printf("\n");
 
-			calculate_lm_mode_contribution_to_Fr(l_max, &lm_mode, Frl_full_in, &orbit, INNER_FIELDS);
-			calculate_lm_mode_contribution_to_Fr(l_max, &lm_mode, Frl_full_out, &orbit, OUTER_FIELDS);
-
-			calculate_lm_mode_contribution_to_Ft(l_max, &lm_mode, Ftl_full_in, &orbit, INNER_FIELDS);
-			calculate_lm_mode_contribution_to_Ft(l_max, &lm_mode, Ftl_full_out, &orbit, OUTER_FIELDS);
-
-			calculate_lm_mode_contribution_to_huul(l_max, huul_full_in, &lm_mode, &orbit, INNER_FIELDS);
-			calculate_lm_mode_contribution_to_huul(l_max, huul_full_out, &lm_mode, &orbit, OUTER_FIELDS);
-			
-			calculate_tensor_lm_mode_contribution_to_huul(l_max, huul_tensor_full_in, &lm_mode, &orbit, INNER_FIELDS);
-			calculate_tensor_lm_mode_contribution_to_huul(l_max, huul_tensor_full_out, &lm_mode, &orbit, OUTER_FIELDS);
 
 			free_lm_mode_data_structure(&lm_mode);
 		}
@@ -889,41 +853,6 @@ void nprintf( const char* format, ... ) {
 		vprintf( format, args );
 		va_end( args );
 	}
-}
-
-void read_in_hP_gauge(struct orbital_params *orbit)
-{
-	hid_t       file_id;
- 	file_id 	= H5Fopen ("input/hP_gauge.h5", H5F_ACC_RDONLY, H5P_DEFAULT);
-	
-    hsize_t     dims[2];
-    herr_t      status;
-	
-    /* get the dimensions of the dataset */
-    status = H5LTget_dataset_info(file_id, "hP_gauge", dims, NULL, NULL);
-	
-	if(dims[0] < lm_to_gamma(l_max,l_max)){
-		printf("Insufficient hP gauge contributions to complete calculation. Exiting.\n\n");
-		exit(0);
-	}
-	
-	orbit->hP_gauge = calloc(dims[0], sizeof(double complex));
-	
-	double *tmp = calloc(dims[0]*dims[1], sizeof(double));
-	
-    /* read in hP_gauge corrections */
-	status = H5LTread_dataset_double(file_id, "hP_gauge", tmp);
-	
-	//store corrections
-	int i;
-	for(i = 0; i< dims[0]; i++){
-		orbit->hP_gauge[i] = tmp[2*i] + I*tmp[2*i+1];
-	}
-	
-	free(tmp);
-		
-    /* close file */
-    H5Fclose (file_id);
 }
 
 

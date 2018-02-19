@@ -25,6 +25,6 @@ env['CC']       = 'mpicc'
 env['CPPPATH']  = ['../include']
 env['CCFLAGS']  = ['-Wall', '-Wno-unused-variable', '-g', '-O2']
 
-sources = ['GSF_ecc.c', 'Runge-Kutta.c', 'SF_data.c', 'array_handling.c', 'boundary_conditions.c', 'convergence_tests.c', 'error_estimate.c', 'file_output.c', 'gauge_fields.c', 'gauge_fields_on_grid.c', 'grid.c', 'h1R_on_grid.c', 'libSch.c', 'math_funcs.c', 'ode_systems.c', 'scaling_coefficients.c', 'self_force.c', 'sources.c', 'static_monopole.c']
+sources = ['GSF_ecc.c', 'Runge-Kutta.c', 'SF_data.c', 'array_handling.c', 'boundary_conditions.c', 'convergence_tests.c', 'error_estimate.c', 'file_output.c', 'gauge_fields.c', 'gauge_fields_on_grid.c', 'grid.c', 'h1R_on_grid.c', 'libSch.c', 'math_funcs.c', 'ode_systems.c', 'scaling_coefficients.c', 'sources.c', 'static_monopole.c']
 
 env.Program('../GSF_circ_output', sources)
