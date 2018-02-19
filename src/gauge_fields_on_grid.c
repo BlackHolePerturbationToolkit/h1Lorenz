@@ -307,6 +307,8 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 {
 	double l 		= n_mode->l;
 
+	printf("Getting here\n");
+
 	int i;
 	for(i = 0; i < orbit->gridsize + 1; i++){
 
@@ -338,7 +340,7 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 
 		double V_l 		= 0.25*f_p*(df/r_p + l*(l+1.0)/(r_p*r_p));
 
-		//Construct the h6 field and its rs and t derivatives
+		// Construct the h6 field and its rs and t derivatives
 		// No need to do n folding as this is only used in the n=0 mode. This mode is real.
 		double complex R6_out 	= 1.0/(2.0*f_p)*(r_p * R1_out_r_deriv - r_p*f_p*R3_out_r_deriv + R1_out - R5_out - f_p*R3_out);
 
@@ -347,10 +349,10 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 		R3_out_rr_deriv 	= 	1.0/(f_p*f_p) *  ( 4.0*V_l * R3_out - 2.0*f_p/(r_p*r_p) * (R1_out - R5_out - (1.0-4.0/r_p)*(R3_out + R6_out))  - f_p*df*R3_out_r_deriv);
 		
 		
-		if(data[0][0][i] == n_mode->hR[0][0][i]){
-			 R1_out_rr_deriv += n_mode->src[0][i];
-			 R3_out_rr_deriv += n_mode->src[1][i];
-		}
+		// if(data[0][0][i] == n_mode->hR[0][0][i]){
+// 			 R1_out_rr_deriv += n_mode->src[0][i];
+// 			 R3_out_rr_deriv += n_mode->src[1][i];
+// 		}
 
 		//Construct the h7 field and its rs derivative
 		double complex R6_out_r_deriv 	= 1.0/f_p*(-1.0/(2.0*f_p) * (R1_out*df - R5_out*df - 2.0*f_p*R1_out_r_deriv + r_p*df*R1_out_r_deriv + 2.0*f_p*f_p*R3_out_r_deriv + f_p*R5_out_r_deriv - r_p*f_p*R1_out_rr_deriv + r_p*f_p*f_p*R3_out_rr_deriv));
@@ -359,9 +361,9 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 
 		R5_out_rr_deriv 		= 1.0/(f_p*f_p) * ( 4.0*V_l * R5_out + 4.0*f_p/(r_p*r_p)*((1.0-4.5/r_p)*R5_out - 0.5*l*(l+1.0)*(R1_out - f_p*R3_out) + 0.5*(1.0-3.0/r_p)*( l*(l+1.0)*R6_out - R7_out)) - f_p*df*R5_out_r_deriv);
 
-		if(data[0][0][i] == n_mode->hR[0][0][i]){
-			 R5_out_rr_deriv += n_mode->src[2][i];
-		}
+		// if(data[0][0][i] == n_mode->hR[0][0][i]){
+		// 	 R5_out_rr_deriv += n_mode->src[2][i];
+		// }
 		
 
 		double complex R7_out_r_deriv	= (r_p * R5_out_rr_deriv + R5_out_r_deriv + 2.0*R5_out_r_deriv + l*(l+1.0)*R6_out_r_deriv);

@@ -33,7 +33,7 @@ double p 		= 0.0;
 double e 		= 0.0;					// Although this code has a few routines that work for eccentric orbits, in general it only works for circular ones
 
 double M 		= 1.0;
-int l_min 		= 2;
+int l_min 		= 1;				// The monopole is computed using another code
 int l_max 		= 0;
 int m_min		= 0;
 int abs_n_max 	= 20;	//!< The absolute maximum n that will be computed. The code will attempt to measure the convergence but sometimes fields get stuck before they reach the threshold.
@@ -62,8 +62,6 @@ int input_src 		= 0;
 
 static pthread_t thread_id;
 
-time_t start, stop;						//!< Used to find the code execution time (wall time)
-
 struct orbital_params orbit;
 
 void 	rescale_the_field(struct lm_mode_data *lm_mode, struct n_mode_data *n_mode, struct orbital_params *orbit);
@@ -83,25 +81,13 @@ typedef void (*function_ptr)(double, struct n_mode_data*, struct orbital_params*
 
 int main(int argc, char *argv[])
 {
-
-    if( argv[1] != NULL && argv[2] != NULL && argv[3] != NULL ){
-		if(strcmp(argv[1], "-o") == 0){
-			output_h1 = 1;
-		}else if(strcmp(argv[1], "-i") == 0){
-			input_src = 1;
-		}else{
-			printf("unknown flag, exiting\n");
-			exit(0);
-		}
-		p = (double)strtod(argv[2], NULL);
-		l_max = (double) strtod(argv[3], NULL);
+    if( argv[1] != NULL && argv[2] != NULL){
+		p = (double)strtod(argv[1], NULL);
+		l_max = (double) strtod(argv[2], NULL);
     }else{
-		printf("\nflag and r0, l_max values required\nflags:\t-i read in source\n\t-o output inhom h1 fields\n\n");
+		printf("r0 and l_max values required\n");
         exit(0);
     }	
-	e = 0;			// always circular in this code
-
-	start = time(NULL);
 	
 	int gamma;
 	int myid, numprocs;
@@ -179,8 +165,6 @@ int main(int argc, char *argv[])
 	cset_even.in_bc_func					= &even_in_bcs;
 	cset_even.ode_system 					= &even_ode_system;
 	cset_even.construct_gauge_fields 		= &construct_R2_R4_gauge_fields;
-//	cset_even.construct_inner_fields		= &construct_even_modes_from_inner_fields;
-//	cset_even.construct_outer_fields		= &construct_even_modes_from_outer_fields;
 	cset_even.construct_gauge_fields_on_grid = &construct_R2_R4_gauge_fields_on_grid;
 
 	cset_odd.num_coupled_fields 			= 2;
@@ -192,8 +176,6 @@ int main(int argc, char *argv[])
 	cset_odd.in_bc_func						= &odd_in_bcs;
 	cset_odd.ode_system 					= &odd_ode_system;
 	cset_odd.construct_gauge_fields			= &construct_R8_gauge_field;
-//	cset_odd.construct_inner_fields			= &construct_odd_modes_from_inner_fields;
-//	cset_odd.construct_outer_fields			= &construct_odd_modes_from_outer_fields;
 	cset_odd.construct_gauge_fields_on_grid	= &construct_R8_gauge_field_on_grid;
 
 	cset_odd_dipole.num_coupled_fields 		= 1;
@@ -204,8 +186,6 @@ int main(int argc, char *argv[])
 	cset_odd_dipole.in_bc_func				= &odd_dipole_in_bcs;
 	cset_odd_dipole.ode_system 				= &odd_dipole_ode_system;
 	cset_odd_dipole.construct_gauge_fields	= &construct_R8_gauge_field;
-//	cset_odd_dipole.construct_inner_fields	= &construct_odd_dipole_from_inner_fields;
-//	cset_odd_dipole.construct_outer_fields	= &construct_odd_dipole_from_outer_fields;
 	cset_odd_dipole.construct_gauge_fields_on_grid	= &construct_R8_gauge_field_on_grid;
 
 	cset_monopole.num_coupled_fields 		= 3;
@@ -218,8 +198,6 @@ int main(int argc, char *argv[])
 	cset_monopole.in_bc_func				= monopole_in_bcs;
 	cset_monopole.ode_system				= monopole_ode_system;
 	cset_monopole.construct_gauge_fields 	= &construct_R2_R4_gauge_fields;
-//	cset_monopole.construct_inner_fields	= &construct_monopole_from_inner_fields;
-//	cset_monopole.construct_outer_fields	= &construct_monopole_from_outer_fields;
 
 	cset_even_dipole.num_coupled_fields 	= 4;
 	cset_even_dipole.num_gauge_fields		= 2;
@@ -232,8 +210,6 @@ int main(int argc, char *argv[])
 	cset_even_dipole.in_bc_func				= even_dipole_in_bcs;
 	cset_even_dipole.ode_system				= even_dipole_ode_system;
 	cset_even_dipole.construct_gauge_fields = &construct_R2_R4_gauge_fields;
-//	cset_even_dipole.construct_inner_fields	= &construct_even_dipole_from_inner_fields;
-//	cset_even_dipole.construct_outer_fields	= &construct_even_dipole_from_outer_fields;
 	cset_even_dipole.construct_gauge_fields_on_grid = &construct_R2_R4_gauge_fields_on_grid;
 
 	cset_even_static.num_coupled_fields		= 3;
@@ -246,8 +222,6 @@ int main(int argc, char *argv[])
 	cset_even_static.in_bc_func				= even_static_in_bcs;
 	cset_even_static.ode_system				= even_static_ode_system;
 	cset_even_static.construct_gauge_fields	= &construct_R6_R7_R2_R4_gauge_fields;
-//	cset_even_static.construct_inner_fields	= &construct_even_modes_from_inner_fields;
-//	cset_even_static.construct_outer_fields	= &construct_even_modes_from_outer_fields;
 	cset_even_static.construct_gauge_fields_on_grid	= &construct_R6_R7_R2_R4_gauge_fields_on_grid;
 
 	init_counter( MPI_COMM_WORLD, &counter_comm );
@@ -313,8 +287,6 @@ int main(int argc, char *argv[])
 				struct n_mode_data n_mode;
 				setup_n_mode_data_structure(&n_mode, l, m, n, &orbit, cset);
 
-				//nprintf("Calculating l=%d m=%d n=%d \tomega*T_r=%.3e \t ",l, m, n, n_mode.omega*orbit.T_r);	
-
 				integrate_field_equations(&orbit, &n_mode);
 
 				calculate_scaling_coefficients(&n_mode, &orbit);
@@ -359,7 +331,6 @@ int main(int argc, char *argv[])
 						for(i = 0; i <= orbit.rb_grid_index; i++){
 							for(j = 0; j < nf; j++){
 								for(k = 0; k < nf; k++){
-									//if(m==2 && i == 99) printf("test: i=%d, %d %d %.14e + %.14e I\n", i*(4*nf*nf) + (j*4*nf) + k*4, j+1, k+1, n_mode.hom_data_in[j][k][2][i], n_mode.hom_data_in[j][k][3][i]);
 									data[i*(4*nf*nf) + (j*4*nf) + k*4 + 0] = n_mode.hom_data_in[j][k][0][i];
 									data[i*(4*nf*nf) + (j*4*nf) + k*4 + 1] = n_mode.hom_data_in[j][k][1][i];
 									data[i*(4*nf*nf) + (j*4*nf) + k*4 + 2] = n_mode.hom_data_in[j][k][2][i];
@@ -454,6 +425,7 @@ int main(int argc, char *argv[])
 					// Close the file.
 					H5Fclose(file_id);
 					
+					
 
 				}
 
@@ -469,66 +441,7 @@ int main(int argc, char *argv[])
 
 	}
 
-	// Ensure all nodes are synced before calculating the GSF contribution from each core 
-	MPI_Barrier( MPI_COMM_WORLD );
-	// Compute the GSF as the sum of the contributions from each core
-	for(l = l_min; l <= l_max; l++){
-		MPI_Allreduce (MPI_IN_PLACE, (void *)Frl_full_in[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		MPI_Allreduce (MPI_IN_PLACE, (void *)Frl_full_out[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-		MPI_Allreduce (MPI_IN_PLACE, (void *)Ftl_full_in[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		MPI_Allreduce (MPI_IN_PLACE, (void *)Ftl_full_out[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-		MPI_Allreduce (MPI_IN_PLACE, (void *)huul_full_in[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		MPI_Allreduce (MPI_IN_PLACE, (void *)huul_full_out[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-		MPI_Allreduce (MPI_IN_PLACE, (void *)huul_tensor_full_in[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		MPI_Allreduce (MPI_IN_PLACE, (void *)huul_tensor_full_out[l], 2*NUM_CHI_VALUES+1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		
-		MPI_Allreduce (MPI_IN_PLACE, (void *)huulR_tensor[l], orbit.gridsize, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		MPI_Allreduce (MPI_IN_PLACE, (void *)FrlR_tensor[l],  orbit.gridsize, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-	}
-
-
-	if(myid != 0){
-		free_alloced_2D_double_array(Frl_full_in, l_max+1);
-		free_alloced_2D_double_array(Frl_full_out, l_max+1);
-		free_alloced_2D_double_array(Ftl_full_in, l_max+1);
-		free_alloced_2D_double_array(Ftl_full_out, l_max+1);	
-		free_alloced_2D_double_array(huul_full_in, l_max+1);
-		free_alloced_2D_double_array(huul_full_out, l_max+1);		
-	}
-
-	// The root core regularizes and outputs the GSF
-	if( myid == 0){
-
-		int k;
-		for(k= 0; k <=l_max; k++)
-		{
-			printf("huul_tensor %d %.12e %.12e %.12e\n", k,  huul_tensor_full_in[k][0],  huulR_tensor[k][orbit.r0_grid_index], FrlR_tensor[k][orbit.r0_grid_index]);
-		}
-
-		struct GSF_data GSF;
-		setup_GSF_data_structure(&GSF, l_max, NUM_CHI_VALUES);
-		GSF.Fr_in->total->l_full 		= Frl_full_in;
-		GSF.Fr_out->total->l_full		= Frl_full_out;
-		GSF.Ft_in->total->l_full		= Ftl_full_in;
-		GSF.Ft_out->total->l_full 		= Ftl_full_out;
-		GSF.huu_in->total->l_full		= huul_full_in;
-		GSF.huu_out->total->l_full		= huul_full_out;
-
-		// Compute the GSF and MP
-		//calculate_GSF_from_full_fields(l_max, &GSF, &orbit);			// This is now done separately
-
-		if(file_output){
-			stop = time(NULL);
-			double wall_time = difftime(stop, start);
-
-			output_GSF_data(l_max, &GSF, &orbit);
-
-			output_run_info_to_file(l_max, wall_time, n_folding, numprocs, multi_threading, &GSF, &orbit);
-		}
-	}
+	
 
 	/* MPI Termination */
 	MPI_Finalize();
@@ -602,24 +515,11 @@ void rescale_the_field(struct lm_mode_data *lm_mode, struct n_mode_data *n_mode,
 			}
 		}
 	}
-	// calculate and store the 2nd-radial derivatives using the field equations
-	
-	
-	//if(lm_mode->l==2 && lm_mode->m == 0) printf("test: %e %e\n", creal(lm_mode->h_in_rs_deriv[0][0]/(1.0-2.0/10.0)), n_mode->inhom_data[0][2][orbit->r0_grid_index]);
-
 
 	// Also construct the gauge fields
 	cset->construct_gauge_fields(lm_mode, n_mode, orbit, cset->num_coupled_fields);
 	if(lm_mode->l > 0){
 		cset->construct_gauge_fields_on_grid(n_mode->inhom_data, n_mode, orbit, cset->num_coupled_fields);
-		//int j = 0;
-		//printf("testing gauge fields: %.14e %.14e\n", n_mode->inhom_data[cset->num_coupled_fields+j][0][orbit->r0_grid_index], creal(lm_mode->h_in[cset->num_coupled_fields+j][0]) );
-		//printf("testing gauge fields: %.14e %.14e\n", n_mode->inhom_data[cset->num_coupled_fields+j][2][orbit->r0_grid_index], creal(lm_mode->h_in_rs_deriv[cset->num_coupled_fields+j][0])/(1.0-2.0/10.0) );
-	}
-
-	//printf("\n");
-	for(d = 0; d < cset->num_coupled_fields+1; d++){
-	//	printf("%.12e %.12e\n", creal(lm_mode->h_in[d][0]), creal(lm_mode->h_out[d][0]) );
 	}
 
 }
