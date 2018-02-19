@@ -56,9 +56,7 @@ int verbose 		= 1;									//!< Set to zero in order reduce the console output o
 
 int abs_error_threshold_fix = 1;							//! Set to one in order to implement the proto-type absolute error thresholding fix
 
-int output_h1 		= 0;
 int output_hom 		= 0;
-int input_src 		= 0;
 
 static pthread_t thread_id;
 
@@ -128,8 +126,6 @@ int main(int argc, char *argv[])
 
 	if(myid == 0){
 		printf("Number of cores in use: %d\n", numprocs);
-		if(output_h1 == 1) printf("The inhom h1 data will be saved to disk\n");
-		if(input_src == 1) printf("The src will be read in\n");
 		printf("n-folding the m=0 modes: ");
 		if(n_folding){
 			printf("enabled\n\n");
@@ -228,21 +224,6 @@ int main(int argc, char *argv[])
 
 	int l, m;
 
-	double** Frl_full_in 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-	double** Frl_full_out 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-
-	double** Ftl_full_in 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-	double** Ftl_full_out 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-
-	double** huul_full_out 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-	double** huul_full_in 				= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-
-	double** huul_tensor_full_out 		= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-	double** huul_tensor_full_in 		= alloc_2D_double_array(l_max+1, 2*NUM_CHI_VALUES+1);
-	
-	double** huulR_tensor 				= alloc_2D_double_array(l_max+1, orbit.gridsize);
-	double** FrlR_tensor 				= alloc_2D_double_array(l_max+1, orbit.gridsize);
-
 	if(multi_threading == 1 || ( multi_threading == 0 && myid != 0)){
 
 		while(1){
@@ -296,12 +277,14 @@ int main(int argc, char *argv[])
 				// Do not perform any convergence testing (this is a relic of the eccentric orbit piece of the code)
 				convergence = 1;
 				
-				if(l >= 1 && output_h1){
+				
+				
+				if(l >= 1){
 					hid_t       file_id; // identifiers 
 					hsize_t     dims[2];
 					int i,j,k;
 					double* data;
-
+					
 					int nf = cset->num_coupled_fields;
 
 					// Create a new directory for the data and open the HDF5 file using default properties. 
@@ -319,8 +302,6 @@ int main(int argc, char *argv[])
 					H5LTset_attribute_int(file_id, "grid", "r0index", &orbit.r0_grid_index, 1);
 					H5LTset_attribute_int(file_id, "grid", "rbindex", &orbit.rb_grid_index, 1);
 					
-					// Output the 
-
 					// Output the homogeneous fields
 					if(output_hom){
 						dims[0] = orbit.rb_grid_index + 1;
@@ -356,13 +337,9 @@ int main(int argc, char *argv[])
 							}
 						}
 
-						//printf("test: %e\n", n_mode.hom_data_out[0][0][2][orbit.gridsize - orbit.ra_grid_index - 1]);
-
 						H5LTmake_dataset_double(file_id, "hom_out", 2, dims, data);
 						free(data);
 					}
-
-					//printf("inhom test: %.14e\n", n_mode.inhom_data[0][2][orbit.r0_grid_index]);
 
 
 					// Add homogeneous (pure gauge) hbar9 to the odd dipole to make it regular at the horizon (but keep the correct ang. mom.)
@@ -375,8 +352,7 @@ int main(int argc, char *argv[])
 							n_mode.inhom_data[0][2][i] 	+= -2.0*A/(r*r*r);
 						}
 					}
-					
-					
+										
 					// Output the inhomogenous data to the left of the particle
 					nf = cset->num_coupled_fields + cset->num_gauge_fields;
 					dims[0] = orbit.r0_grid_index+1;
@@ -403,7 +379,7 @@ int main(int argc, char *argv[])
 					
 					for(i = orbit.r0_grid_index; i < orbit.gridsize + 1; i++){
 						for(j = 0; j < nf; j++){
-							if(i == orbit.gridsize){
+							if(i == orbit.gridsize){ //FIXME: what is this for?
 								data[0*4*nf + j*4 + 0] = n_mode.inhom_data[j][0][orbit.gridsize];
 								data[0*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][orbit.gridsize];
 								data[0*4*nf + j*4 + 2] = n_mode.inhom_data[j][2][orbit.gridsize];

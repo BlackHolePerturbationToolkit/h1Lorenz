@@ -306,9 +306,7 @@ void construct_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_data *n_
 void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_data *n_mode, struct orbital_params *orbit, int num_coupled_fields)
 {
 	double l 		= n_mode->l;
-
-	printf("Getting here\n");
-
+	
 	int i;
 	for(i = 0; i < orbit->gridsize + 1; i++){
 
@@ -347,12 +345,6 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 		R1_out_rr_deriv		= 	1.0/(f_p*f_p) * ( 4.0*V_l * R1_out + 4.0/(r_p*r_p) * f_p * f_p * R3_out_r_deriv + 2.0*f_p/(r_p*r_p) * (1.0 - 4.0/r_p)*(R1_out - R5_out - f_p*R3_out) - 2.0*f_p*f_p/(r_p*r_p)*(1.0-6.0/r_p)*R6_out  - f_p*df*R1_out_r_deriv);
 
 		R3_out_rr_deriv 	= 	1.0/(f_p*f_p) *  ( 4.0*V_l * R3_out - 2.0*f_p/(r_p*r_p) * (R1_out - R5_out - (1.0-4.0/r_p)*(R3_out + R6_out))  - f_p*df*R3_out_r_deriv);
-		
-		
-		// if(data[0][0][i] == n_mode->hR[0][0][i]){
-// 			 R1_out_rr_deriv += n_mode->src[0][i];
-// 			 R3_out_rr_deriv += n_mode->src[1][i];
-// 		}
 
 		//Construct the h7 field and its rs derivative
 		double complex R6_out_r_deriv 	= 1.0/f_p*(-1.0/(2.0*f_p) * (R1_out*df - R5_out*df - 2.0*f_p*R1_out_r_deriv + r_p*df*R1_out_r_deriv + 2.0*f_p*f_p*R3_out_r_deriv + f_p*R5_out_r_deriv - r_p*f_p*R1_out_rr_deriv + r_p*f_p*f_p*R3_out_rr_deriv));
@@ -360,21 +352,15 @@ void construct_R6_R7_R2_R4_gauge_fields_on_grid(double ***data, struct n_mode_da
 		double complex R7_out			= r_p * R5_out_r_deriv + 2.0*R5_out + l*(l+1.0)*R6_out;
 
 		R5_out_rr_deriv 		= 1.0/(f_p*f_p) * ( 4.0*V_l * R5_out + 4.0*f_p/(r_p*r_p)*((1.0-4.5/r_p)*R5_out - 0.5*l*(l+1.0)*(R1_out - f_p*R3_out) + 0.5*(1.0-3.0/r_p)*( l*(l+1.0)*R6_out - R7_out)) - f_p*df*R5_out_r_deriv);
-
-		// if(data[0][0][i] == n_mode->hR[0][0][i]){
-		// 	 R5_out_rr_deriv += n_mode->src[2][i];
-		// }
 		
 
 		double complex R7_out_r_deriv	= (r_p * R5_out_rr_deriv + R5_out_r_deriv + 2.0*R5_out_r_deriv + l*(l+1.0)*R6_out_r_deriv);
-
-		//if(i == orbit->r0_grid_index) printf("R5 test: %.14e %.14e %.14e\n", creal(R5_out_rr_deriv), creal(R5_out_r_deriv), creal(R6_out_r_deriv));
 
 		data[num_coupled_fields][0][i] = creal(R6_out);
 		data[num_coupled_fields][1][i] = cimag(R6_out);
 		data[num_coupled_fields][2][i] = creal(R6_out_r_deriv);
 		data[num_coupled_fields][3][i] = cimag(R6_out_r_deriv);
-
+		
 		data[num_coupled_fields+1][0][i] = creal(R7_out);
 		data[num_coupled_fields+1][1][i] = cimag(R7_out);
 		data[num_coupled_fields+1][2][i] = creal(R7_out_r_deriv);
