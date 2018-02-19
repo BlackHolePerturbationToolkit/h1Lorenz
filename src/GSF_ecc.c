@@ -120,11 +120,9 @@ int main(int argc, char *argv[])
 
 	set_primary_orbital_params(p, e);
 	get_orbit_params(&orbit, NUM_CHI_VALUES);	
-	char radial_grid_filename[80];
-	sprintf(radial_grid_filename, "input/radial_grid_r%d.h5", (int)p);
-	printf("Loading data from %s\n", radial_grid_filename);
-		
-	orbit.gridsize = readin_grid(radial_grid_filename, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
+	
+	// Load the radial grid
+	orbit.gridsize = readin_grid(p, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
 	
 	//read in the data for the gauge fields
 	read_in_hP_gauge(&orbit);

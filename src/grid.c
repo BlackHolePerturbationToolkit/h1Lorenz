@@ -3,15 +3,25 @@
 #include <math.h>
 #include <hdf5.h>
 #include <hdf5_hl.h>
+#include <unistd.h>
 
-int readin_grid(char *filename, double **data, int *ra_index, int *r0_index, int *rb_index){
+int readin_grid(double r0, double **data, int *ra_index, int *r0_index, int *rb_index){
+	
+	char filename[80];
+	sprintf(filename, "input/radial_grid_r%d.h5", (int)r0);				//FIXME: only allows integer values of r0 currently
 	
     hid_t       file_id;
     hsize_t     dims[1];
     herr_t      status;
 
-    /* open file from ex_lite1.c */
-    file_id = H5Fopen (filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+	if( access( filename, F_OK ) != -1 ) {
+    	/* open file from ex_lite1.c */
+		printf("Loading data from %s\n", filename);
+    	file_id = H5Fopen (filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+	}else{
+		printf("Required file %s not found\n", filename);
+		exit(0);
+	}
 
     /* get the dimensions of the dataset */
     status = H5LTget_dataset_info(file_id, "/r", dims, NULL, NULL);
