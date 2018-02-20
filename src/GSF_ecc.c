@@ -140,6 +140,8 @@ int main(int argc, char *argv[])
 	struct coupled_set cset_odd_dipole;
 	struct coupled_set cset_monopole;
 	struct coupled_set cset_even_dipole;
+	struct coupled_set cset_even_static;
+	
 	struct coupled_set *csets[5];
 	csets[MONOPOLE] 	= &cset_monopole;
 	csets[ODD_DIPOLE] 	= &cset_odd_dipole;
@@ -147,7 +149,6 @@ int main(int argc, char *argv[])
 	csets[EVEN] 		= &cset_even;
 	csets[ODD]			= &cset_odd;
 
-	struct coupled_set	cset_even_static;
 
 	cset_even.num_coupled_fields 			= 5;
 	cset_even.num_gauge_fields 				= 2;
@@ -236,7 +237,6 @@ int main(int argc, char *argv[])
 			 if(m<m_min) continue;
 
 			if(l > l_max + 0*3) break;	// Need only compute three more tensor spherical harmonic l-modes than the required l_max scalar harmonic l-modes
-			//if(l==0 && m == 0) {} else{continue;}
 
 			printf("Calculating tensor mode: l=%d m=%d\n", l, m);		
 		
@@ -276,8 +276,6 @@ int main(int argc, char *argv[])
 								
 				// Do not perform any convergence testing (this is a relic of the eccentric orbit piece of the code)
 				convergence = 1;
-				
-				
 				
 				if(l >= 1){
 					hid_t       file_id; // identifiers 
@@ -379,7 +377,7 @@ int main(int argc, char *argv[])
 					
 					for(i = orbit.r0_grid_index; i < orbit.gridsize + 1; i++){
 						for(j = 0; j < nf; j++){
-							if(i == orbit.gridsize){ //FIXME: what is this for?
+							if(i == orbit.gridsize){ // Use the right-hand derviatives at the particle
 								data[0*4*nf + j*4 + 0] = n_mode.inhom_data[j][0][orbit.gridsize];
 								data[0*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][orbit.gridsize];
 								data[0*4*nf + j*4 + 2] = n_mode.inhom_data[j][2][orbit.gridsize];
@@ -408,7 +406,6 @@ int main(int argc, char *argv[])
 				free_n_mode_data_structure(&n_mode, cset, &orbit);
 
 			}
-
 
 			free_lm_mode_data_structure(&lm_mode);
 		}
