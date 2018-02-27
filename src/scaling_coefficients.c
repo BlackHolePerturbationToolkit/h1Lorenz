@@ -131,10 +131,11 @@ void calculate_scaling_coefficients(struct n_mode_data *n_mode, struct orbital_p
 
 	int i;
 	for(i = 0; i < n_mode->cset->num_coupled_fields; i++){
-		if(convergence_test_type != OUTER_CONTRIBUTIONS) n_mode->C_in[i] 	= integrate_to_find_scaling_coeffs(RE_IN_FIELD, i, n_mode, orbit) + I * integrate_to_find_scaling_coeffs(IM_IN_FIELD, i, n_mode, orbit);
+		n_mode->C_in[i] 	= integrate_to_find_scaling_coeffs(RE_IN_FIELD, i, n_mode, orbit) + I * integrate_to_find_scaling_coeffs(IM_IN_FIELD, i, n_mode, orbit);
 		n_mode->C_out[i]	= integrate_to_find_scaling_coeffs(RE_OUT_FIELD, i, n_mode, orbit) + I * integrate_to_find_scaling_coeffs(IM_OUT_FIELD, i, n_mode, orbit);		//FIXME do we need to do this this way? The method is simpler but the GSL integration routine means have to invert a lot of matrices
-	//	printf("test: %.16e\n", creal(n_mode->C_out[i]));
-	//	printf("source test: %.16e\n", creal(n_mode->cset->source[i](0.1, n_mode, orbit, SOURCE_TOTAL)));;
+
+		//printf("Test: %.12e %.12e\n", creal(n_mode->C_in[i]), creal(n_mode->C_out[i]) );
+
 	}
     
 

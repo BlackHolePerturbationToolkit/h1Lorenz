@@ -15,3 +15,12 @@ In the notebook directory run:
 The run:
 
 mpirun -n $numprocs ./GSF_circ_output r0 lmax
+
+
+### ToDo
+
+ - Add calculation of monopole
+ - Add calculation of C_in/C_out and expansion near horizon
+ - Add calculation of F^R and h^{R1}_{ab}
+ 
+The above are current performed in Mathematica which is repeating some of this calculation of this code. Be nice to have it all done in a single, fast code run.
