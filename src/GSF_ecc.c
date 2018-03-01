@@ -394,7 +394,23 @@ int main(int argc, char *argv[])
 
 					H5LTmake_dataset_double(file_id, "inhom_right", 2, dims, data);
 					free(data);
-			
+					
+					
+					//Output the complex amplitudes of the asymptotic metric perturbation
+					nf = cset->num_coupled_fields;		// FIXME need to add gauge fields
+					dims[0] = 2*nf;						// times 2 for the real and complex part
+					data = calloc(dims[0], sizeof(double));
+					for(i = 0; i < nf; i++){
+						for(j = 0; j < nf; j++){
+							data[2*i] 	+= creal(n_mode.C_out[j] * n_mode.C_out_hom[i][j]);
+							data[2*i+1] += cimag(n_mode.C_out[j] * n_mode.C_out_hom[i][j]);
+						}
+						
+						//printf("Output test: %.12e %.12e\n", data[2*i], data[2*i+1]);
+					}
+					
+					H5LTmake_dataset_double(file_id, "C_inf", 1, dims, data);
+					free(data);
 			
 					// Close the file.
 					H5Fclose(file_id);
@@ -657,8 +673,11 @@ void setup_n_mode_data_structure(struct n_mode_data *n_mode, int l, int m, int n
 	n_mode->n 		= n;
 	n_mode->omega 	= m*orbit->Omega_phi + n*orbit->Omega_r;
 
-	n_mode->C_in 			= (double complex*)malloc(cset->num_coupled_fields * sizeof(double complex));
-	n_mode->C_out 			= (double complex*)malloc(cset->num_coupled_fields * sizeof(double complex));
+	n_mode->C_in 			= (double complex*)calloc(cset->num_coupled_fields, sizeof(double complex));
+	n_mode->C_out 			= (double complex*)calloc(cset->num_coupled_fields, sizeof(double complex));
+	
+	n_mode->C_in_hom 		= alloc_2D_complex_array(nf,nf);
+	n_mode->C_out_hom		= alloc_2D_complex_array(nf,nf);
 
 	n_mode->R_out 			= alloc_3D_complex_array(cset->num_coupled_fields, cset->num_coupled_fields, NUM_CHI_VALUES+1);
 	n_mode->R_out_rs_deriv 	= alloc_3D_complex_array(cset->num_coupled_fields, cset->num_coupled_fields, NUM_CHI_VALUES+1);

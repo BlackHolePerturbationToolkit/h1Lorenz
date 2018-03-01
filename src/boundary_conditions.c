@@ -692,13 +692,20 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			gsl_vector_complex_free(eigenvalues);
 			gsl_matrix_complex_free(eigenvectors);
 			gsl_matrix_complex_free(inverse_eigen);
-		//}else{
-		//	a1[3] = a0s[0];
-		//	a3[3] = a0s[1];  
-		//	a5[3] = a0s[2];
-		//	a6[3] = a0s[3];
-		//	a7[3] = a0s[4];
-		//}
+			//}else{
+			// a1[3] = a0s[0];
+// 			a3[3] = a0s[1];
+// 			a5[3] = a0s[2];
+// 			a6[3] = a0s[3];
+// 			a7[3] = a0s[4];
+			//}
+			
+		// Store the rotated basis values in a0s
+			a0s[0] = a1[3];
+			a0s[1] = a3[3];
+			a0s[2] = a5[3];
+			a0s[3] = a6[3];
+			a0s[4] = a7[3];
 
 		double complex sum1 = a1[3]; double complex sum3 = a3[3]; double complex sum5 = a5[3]; double complex sum6 = a6[3]; double complex sum7 = a7[3];
 	
@@ -1024,6 +1031,9 @@ void odd_out_bcs(double* a0s, struct boundary_conditions *bcs)
 
 		}
 		 
+		// Store the complex amplitude of the homogeneous fields
+		a0s[0] = a9[2];
+		a0s[1] = a10[2];
      
 		double complex sum9 = a9[2];
 		double complex sum10 = a10[2];

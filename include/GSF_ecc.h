@@ -61,6 +61,10 @@ struct n_mode_data
 	double complex* C_in;											//!< Array of scaling coefficients for the inner fields. The index is the basis number.
 	double complex* C_out;											//!< Array of scaling coefficients for the outer fields. The index is the basis number.
 
+	double complex** C_in_hom;
+	double complex** C_out_hom;
+
+
 	double**** hom_data_in;											//!< Array storing the homogeneous field data,  1 = field index, 2 = basis index, 3 = part (re/im/dre/dim) index, 4 = grid index
 	double**** hom_data_out;										//!< Array storing the homogeneous field data,  1 = field index, 2 = basis index, 3 = part (re/im/dre/dim) index, 4 = grid index
 	double***  inhom_data;											//!< Array storing the inhomogeneous field data,  1 = field index, 2 = part (re/im/dre/dim) index, 3 = grid index
