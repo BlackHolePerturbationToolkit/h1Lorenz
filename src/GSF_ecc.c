@@ -282,6 +282,7 @@ int main(int argc, char *argv[])
 					hsize_t     dims[2];
 					int i,j,k;
 					double* data;
+					double* data2;
 					
 					int nf = cset->num_coupled_fields;
 
@@ -396,21 +397,26 @@ int main(int argc, char *argv[])
 					free(data);
 					
 					
-					//Output the complex amplitudes of the asymptotic metric perturbation
+					//Output the infinity complex amplitudes of the asymptotic metric perturbation
 					nf = cset->num_coupled_fields;		// FIXME need to add gauge fields
 					dims[0] = 2*nf;						// times 2 for the real and complex part
-					data = calloc(dims[0], sizeof(double));
+					data  = calloc(dims[0], sizeof(double));
+					data2 = calloc(dims[0], sizeof(double));
 					for(i = 0; i < nf; i++){
 						for(j = 0; j < nf; j++){
 							data[2*i] 	+= creal(n_mode.C_out[j] * n_mode.C_out_hom[i][j]);
 							data[2*i+1] += cimag(n_mode.C_out[j] * n_mode.C_out_hom[i][j]);
-						}
-						
-						//printf("Output test: %.12e %.12e\n", data[2*i], data[2*i+1]);
+							
+							data2[2*i] 	 += creal(n_mode.C_in[j] * n_mode.C_in_hom[i][j]);
+							data2[2*i+1] += cimag(n_mode.C_in[j] * n_mode.C_in_hom[i][j]);
+						}						
 					}
 					
 					H5LTmake_dataset_double(file_id, "C_inf", 1, dims, data);
+					H5LTmake_dataset_double(file_id, "C_horiz", 1, dims, data2);
+					
 					free(data);
+					free(data2);	
 			
 					// Close the file.
 					H5Fclose(file_id);

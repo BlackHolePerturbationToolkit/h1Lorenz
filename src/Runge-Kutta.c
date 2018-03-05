@@ -34,7 +34,6 @@ void integrate_out_field(struct orbital_params *orbit, struct n_mode_data *n_mod
 
 		cset->out_bc_func(a0s, &bcs);
 		
-		
 		// Store the asymptotic ampltidues of the homogeneous fields
 		for(k = 0; k < cset->num_coupled_fields; k++){
 			n_mode->C_out_hom[k][d] = a0s[k];
@@ -139,6 +138,13 @@ void integrate_in_field(struct orbital_params *orbit, struct n_mode_data *n_mode
 		bcs.omega		= n_mode->omega;
 
 		cset->in_bc_func(a0s, &bcs);
+		
+		// Store the asymptotic ampltidues of the homogeneous fields
+		for(k = 0; k < cset->num_coupled_fields; k++){
+			n_mode->C_in_hom[k][d] = a0s[k];
+		}
+		
+		
 		const gsl_odeiv_step_type * T = gsl_odeiv_step_rk8pd;
 
 		gsl_odeiv_step * s     = gsl_odeiv_step_alloc (T, 4*cset->num_coupled_fields);
