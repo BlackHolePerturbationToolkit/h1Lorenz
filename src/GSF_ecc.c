@@ -288,9 +288,9 @@ int main(int argc, char *argv[])
 
 					// Create a new directory for the data and open the HDF5 file using default properties. 
 					char fileloc[50];
-					sprintf(fileloc, "data/fields_r%d", (int)p);
+					sprintf(fileloc, "data/fields_r%g", p);
 					mkdir(fileloc, 0700);
-					sprintf(fileloc, "data/fields_r%d/h1-l%dm%d.h5", (int)p, l, m);
+					sprintf(fileloc, "data/fields_r%g/h1-l%dm%d.h5", p, l, m);
 
 					file_id = H5Fcreate(fileloc, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
