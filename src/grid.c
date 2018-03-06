@@ -8,7 +8,7 @@
 int readin_grid(double r0, double **data, int *ra_index, int *r0_index, int *rb_index){
 	
 	char filename[80];
-	sprintf(filename, "input/radial_grid_r%d.h5", (int)r0);				//FIXME: only allows integer values of r0 currently
+	sprintf(filename, "input/radial_grid_r%g.h5", r0);				//FIXME: only allows integer values of r0 currently
 	
     hid_t       file_id;
     hsize_t     dims[1];
