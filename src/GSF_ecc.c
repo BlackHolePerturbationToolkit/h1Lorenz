@@ -30,13 +30,13 @@
 #include "h1R_on_grid.h"
 
 double p 		= 0.0;
-double e 		= 0.0;					// Although this code has a few routines that work for eccentric orbits, in general it only works for circular ones
+double e 		= 0.0;					//!< Although this code has a few routines that work for eccentric orbits, in general it only works for circular ones
 
-double M 		= 1.0;
-int l_min 		= 1;				// The monopole is computed using another code
+double M 		= 1.0;					//!< All black holes have a mass of M = 1
+int l_min 		= 0;				
 int l_max 		= 0;
 int m_min		= 0;
-int abs_n_max 	= 20;	//!< The absolute maximum n that will be computed. The code will attempt to measure the convergence but sometimes fields get stuck before they reach the threshold.
+int abs_n_max 	= 20;					//!< The absolute maximum n that will be computed. The code will attempt to measure the convergence but sometimes fields get stuck before they reach the threshold.
 int n_min		= 0;			
 
 double MATCHING_INTEGRATION_ACCURACY 		= 1e-12;		//!< Sets the accuracy on the integration that calculates the scaling coefficients (method of EHS)
@@ -255,29 +255,32 @@ int main(int argc, char *argv[])
 			n = n_min;
 			while(convergence != CONVERGED){
 
+				struct n_mode_data n_mode;
+				setup_n_mode_data_structure(&n_mode, l, m, n, &orbit, cset);
+
 				if(e == 0) {
 					if(abs(n) > 0) break;
 				}
 
-				if(l == 0 && m == 0 && n == 0) {															// Static monopole requires a different treatment
-					construct_static_monopole(&lm_mode, &orbit); n = 1; continue;														
+				if(l == 0 && m == 0 && n == 0) {														// Static monopole requires a different treatment
+					construct_static_monopole(&n_mode, &orbit);														
+				}else{
+				
+					if((l+m) % 2 == 0 && m == 0 && n == 0) cset = &cset_even_static;					// Even static modes require a different treatment
+					else cset = csets[select_correct_coupled_set(l,m)];	
+
+					integrate_field_equations(&orbit, &n_mode);
+
+					calculate_scaling_coefficients(&n_mode, &orbit);
+
+					rescale_the_field(&lm_mode, &n_mode, &orbit);
+				
 				}
-				if((l+m) % 2 == 0 && m == 0 && n == 0 && l > 0) cset = &cset_even_static;					// Even static modes require a different treatment
-				else cset = csets[select_correct_coupled_set(l,m)];	
-
-				struct n_mode_data n_mode;
-				setup_n_mode_data_structure(&n_mode, l, m, n, &orbit, cset);
-
-				integrate_field_equations(&orbit, &n_mode);
-
-				calculate_scaling_coefficients(&n_mode, &orbit);
-
-				rescale_the_field(&lm_mode, &n_mode, &orbit);
-								
+												
 				// Do not perform any convergence testing (this is a relic of the eccentric orbit piece of the code)
 				convergence = 1;
 				
-				if(l >= 1){
+				if(l >= 0){
 					hid_t       file_id; // identifiers 
 					hsize_t     dims[2];
 					int i,j,k;
@@ -358,7 +361,7 @@ int main(int argc, char *argv[])
 					dims[1] = 4*nf;
 					data = malloc(sizeof(double) * 4*nf*dims[0]);
 					for(i = 0; i < dims[0]; i++){					
-						for(j = 0; j < nf; j++){
+						for(j = 0; j < nf; j++){							
 							data[i*4*nf + j*4 + 0] = n_mode.inhom_data[j][0][i];
 							data[i*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][i];
 							data[i*4*nf + j*4 + 2] = n_mode.inhom_data[j][2][i];
@@ -383,7 +386,6 @@ int main(int argc, char *argv[])
 								data[0*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][orbit.gridsize];
 								data[0*4*nf + j*4 + 2] = n_mode.inhom_data[j][2][orbit.gridsize];
 								data[0*4*nf + j*4 + 3] = n_mode.inhom_data[j][3][orbit.gridsize];
-							
 							}else{
 								data[(i-orbit.r0_grid_index)*4*nf + j*4 + 0] = n_mode.inhom_data[j][0][i];
 								data[(i-orbit.r0_grid_index)*4*nf + j*4 + 1] = n_mode.inhom_data[j][1][i];
