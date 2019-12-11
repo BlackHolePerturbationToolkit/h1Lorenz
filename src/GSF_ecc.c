@@ -56,7 +56,7 @@ int verbose 		= 1;									//!< Set to zero in order reduce the console output o
 
 int abs_error_threshold_fix = 1;							//! Set to one in order to implement the proto-type absolute error thresholding fix
 
-int output_hom 		= 0;
+int output_hom 		= 1;
 
 static pthread_t thread_id;
 
@@ -109,6 +109,12 @@ int main(int argc, char *argv[])
 	// Load the radial grid
 	orbit.gridsize = readin_grid(p, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
 
+	// override the ra and rb grid indexes to get the homogeneous solutions outputted over the entire radial domain
+	orbit.ra_grid_index = 0;
+	//orbit.rb_grid_index = 3706;		//FIXME: this only works for the r0=10M case
+	//orbit.rb_grid_index = 3526;		//FIXME: this only works for the r0=8M case
+	orbit.rb_grid_index = orbit.gridsize - 1;
+		
 	if(provided == MPI_THREAD_MULTIPLE){
 		if(myid == 0) printf("\nMPI multithreading available: multithreading the lm mode counter.\n\n");
 		multi_threading = 1;
@@ -401,7 +407,7 @@ int main(int argc, char *argv[])
 					
 					//Output the infinity complex amplitudes of the asymptotic metric perturbation
 					nf = cset->num_coupled_fields;		// FIXME need to add gauge fields
-					dims[0] = 2*nf;						// times 2 for the real and complex part
+					dims[0] = 2*nf;						// times 2 for the real and imaginary parts
 					data  = calloc(dims[0], sizeof(double));
 					data2 = calloc(dims[0], sizeof(double));
 					for(i = 0; i < nf; i++){
