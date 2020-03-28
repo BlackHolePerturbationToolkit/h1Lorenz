@@ -15,9 +15,9 @@ In the inputs directory you will find the grids we currently use in the project.
 
 To run the code use:
 
-mpirun -n $numprocs ./h1Lorenz r0 lmax
+`mpirun -n $numprocs ./h1Lorenz r0 lmax`
 
-where $numprocs should be at least 2 as one core is used to distribute work to the other cores (note: I've not tested how well the code works with n >= 2 in a long time).
+where ``$numprocs`` should be at least 2 as one core is used to distribute work to the other cores (note: I've not tested how well the code works with n >= 2 in a long time), `r0` is the particle's radius (in Schwarzschild coordinates), and `lmax` is the maximum l value to compute.
 
 ### Output
 
@@ -42,5 +42,5 @@ Lorenz-gauge decomposition into tensor spherical harmonics: [arXiv:0510019](http
 Lorenz-gauge circular orbits in frequency domain [arXiv:1012.5860](https://arxiv.org/abs/1012.5860)  
 Lorenz-gauge eccentric orbits in the frequency domain [arXiv:1308.5223](https://arxiv.org/abs/1308.5223), [arXiv:1409.4419](https://arxiv.org/abs/1409.4419)
 
-Lorenz-gauge circular orbits in time-domain: [arXiv:gr-qc/0701069](https://arxiv.org/abs/gr-qc/0701069)
+Lorenz-gauge circular orbits in time-domain: [arXiv:gr-qc/0701069](https://arxiv.org/abs/gr-qc/0701069)  
 Lorenz-gauge eccentric orbits in time-domain: [arXiv:1002.2386](https://arxiv.org/abs/1002.2386)
