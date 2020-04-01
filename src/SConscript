@@ -14,9 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
+import sys, os
 env = Environment()
 
+
+# pretty output
+if ARGUMENTS.get('VERBOSE') != '1':
+  if sys.stdout.isatty():
+    env['CCCOMSTR'] = "\033[92mCompiling\033[0m $TARGET"
+    env['LINKCOMSTR'] = "\033[94mLinking\033[0m $TARGET"
+  else:
+    env['CCCOMSTR'] = "Compiling $TARGET"
+    env['LINKCOMSTR'] = "Linking $TARGET"
+    
+# Build options
 env['ENV']['TERM'] = os.environ['TERM']
 
 env['LIBPATH']  = ['']
