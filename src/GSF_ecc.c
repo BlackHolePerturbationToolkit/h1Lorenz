@@ -79,11 +79,14 @@ typedef void (*function_ptr)(double, struct n_mode_data*, struct orbital_params*
 
 int main(int argc, char *argv[])
 {
-    if( argv[1] != NULL && argv[2] != NULL){
+    char *outdir, *gridfile;
+    if( argv[1] != NULL && argv[2] != NULL && argc == 5){
 		p = (double)strtod(argv[1], NULL);
 		l_max = (double) strtod(argv[2], NULL);
+		gridfile = argv[3];
+		outdir = argv[4];
     }else{
-		printf("r0 and l_max values required\n");
+		printf("Usage: h1Lorenz <p> <lmax> <gridfile> <outdir>\n");
         exit(0);
     }	
 	
@@ -107,7 +110,7 @@ int main(int argc, char *argv[])
 	get_orbit_params(&orbit, NUM_CHI_VALUES);	
 	
 	// Load the radial grid
-	orbit.gridsize = readin_grid(p, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
+	orbit.gridsize = readin_grid(gridfile, &orbit.grid, &orbit.ra_grid_index, &orbit.r0_grid_index, &orbit.rb_grid_index);
 
 	// override the ra and rb grid indexes to get the homogeneous solutions outputted over the entire radial domain
 	orbit.ra_grid_index = 0;
@@ -296,10 +299,12 @@ int main(int argc, char *argv[])
 					int nf = cset->num_coupled_fields;
 
 					// Create a new directory for the data and open the HDF5 file using default properties. 
-					char fileloc[50];
-					sprintf(fileloc, "data/fields_r%g", p);
-					mkdir(fileloc, 0700);
-					sprintf(fileloc, "data/fields_r%g/h1-l%dm%d.h5", p, l, m);
+					char fileloc[50], filename[50];
+					mkdir(outdir, 0700);
+					sprintf(filename, "h1-l%dm%d.h5", l, m);
+					strcpy(fileloc, outdir);
+					strcat(fileloc, "/");
+					strcat(fileloc, filename);
 
 					file_id = H5Fcreate(fileloc, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 

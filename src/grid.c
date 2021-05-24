@@ -5,10 +5,7 @@
 #include <hdf5_hl.h>
 #include <unistd.h>
 
-int readin_grid(double r0, double **data, int *ra_index, int *r0_index, int *rb_index){
-	
-	char filename[80];
-	sprintf(filename, "input/radial_grid_r%g.h5", r0);				//FIXME: only allows integer values of r0 currently
+int readin_grid(char* filename, double **data, int *ra_index, int *r0_index, int *rb_index){
 	
     hid_t       file_id;
     hsize_t     dims[1];

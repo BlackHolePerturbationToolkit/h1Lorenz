@@ -1,1 +1,1 @@
-int readin_grid(double r0, double **data, int *ra_index, int *r0_index, int *rb_index);
+int readin_grid(char* filename, double **data, int *ra_index, int *r0_index, int *rb_index);
