@@ -30,10 +30,10 @@ if ARGUMENTS.get('VERBOSE') != '1':
 # Build options
 env['ENV']['TERM'] = os.environ['TERM']
 
-env['LIBPATH']  = ['']
-env['LIBS']     = ['gsl' , 'gslcblas', 'hdf5', 'hdf5_hl']
+env['LIBPATH']  = ['/usr/lib/x86_64-linux-gnu/hdf5/serial/']
+env['LIBS']     = ['gsl' , 'gslcblas', 'hdf5', 'hdf5_hl', 'm']
 env['CC']       = 'mpicc'
-env['CPPPATH']  = ['../include']
+env['CPPPATH']  = ['../include', '/usr/include/hdf5/serial']
 env['CCFLAGS']  = ['-Wall', '-Wno-unused-variable', '-g', '-O2']
 
 sources = ['GSF_ecc.c', 'Runge-Kutta.c', 'SF_data.c', 'array_handling.c', 'boundary_conditions.c', 'convergence_tests.c', 'error_estimate.c', 'file_output.c', 'gauge_fields.c', 'gauge_fields_on_grid.c', 'grid.c', 'h1R_on_grid.c', 'libSch.c', 'math_funcs.c', 'ode_systems.c', 'scaling_coefficients.c', 'sources.c', 'static_monopole.c']
