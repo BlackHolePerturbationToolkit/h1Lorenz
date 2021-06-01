@@ -25,11 +25,12 @@ rValues=rOfrs/@rsValues;
 V1Region = rValues;
 V2Region=Table[r,{r,V1Boundary,r0-\[CapitalDelta]r0,0.01}][[2;;]];
 TRegion = Table[r,{r,r0-\[CapitalDelta]r0,r0+\[CapitalDelta]r0,0.01}][[2;;]];
-U1Region=Table[r,{r,r0+\[CapitalDelta]r0,1000,0.1}][[2;;]];
-U2Region=Table[r,{r,1000,10^4,1}][[2;;]];
+U1Region=Table[r,{r,r0+\[CapitalDelta]r0,100,0.1}][[2;;]];
+U2Region=Table[r,{r,100,1000,0.5}][[2;;]];
+U3Region=Table[r,{r,1000,10^4,4}][[2;;]];
 
 
-grid=Union@N[Join[V1Region,V2Region,TRegion,U1Region,U2Region]];
+grid=Union@N[Join[V1Region,V2Region,TRegion,U1Region,U2Region,U3Region]];
 
 
 importantIndexes=Flatten[{Position[grid,r0-\[CapitalDelta]r0],Position[grid,r0],Position[grid,r0+\[CapitalDelta]r0]}];
