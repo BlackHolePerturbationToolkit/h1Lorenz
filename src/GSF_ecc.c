@@ -56,7 +56,7 @@ int verbose 		= 1;									//!< Set to zero in order reduce the console output o
 
 int abs_error_threshold_fix = 1;							//! Set to one in order to implement the proto-type absolute error thresholding fix
 
-int output_hom 		= 0;
+int output_hom 		= 1;
 
 static pthread_t thread_id;
 
