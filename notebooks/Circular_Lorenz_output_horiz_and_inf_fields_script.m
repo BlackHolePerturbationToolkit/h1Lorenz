@@ -28,6 +28,8 @@ r0Frac =  ToExpression[($CommandLine)[[-1]]];
 
 r0=r0Int + r0Frac/10;
 
+Print["Orbital radius = ", r0, "+", r0Frac, "/10 = ", r0];
+
 lmin=0;
 lmax=50;
 
