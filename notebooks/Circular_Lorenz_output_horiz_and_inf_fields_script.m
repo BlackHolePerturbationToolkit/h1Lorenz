@@ -925,12 +925,17 @@ r0ToString[r_Integer]:=ToString[r]
 r0ToString[r_]:=ToString[N[r]]
 
 
-SetDirectory["~/Temp/"];
+(*SetDirectory["~/Temp/"];*)
 (*Export["hlmi_r"<>r0ToString[r0]<>"_high_acc_l"<>ToString[lmin]<>"-"<>ToString[lmax]<>".dat",Flatten[N[output,30],1]]*)
+SetDirectory["~/Code/SecondOrder/FirstOrderData/data/ret_data"];
 Export["hlmi_r"<>r0ToString[r0]<>"_high_acc.dat",Flatten[N[output,30],1]]
+
+SetDirectory["~/Code/SecondOrder/FirstOrderData/data/boundary_data/horiz_boundary_data"];
 Export["hlmi_r"<>r0ToString[r0]<>"_high_acc_horiz_coeffs_reg_monopole.dat",Flatten[outputHorizCoeffs,1]]
+
+SetDirectory["~/Code/SecondOrder/FirstOrderData/data/boundary_data/inf_boundary_data"];
 Export["hlmi_r"<>r0ToString[r0]<>"_high_acc_inf_coeffs_reg_monopole.dat",Flatten[outputInfCoeffs,1]]
 Export["hlmi_r"<>r0ToString[r0]<>"_high_acc_inf_log_coeffs_reg_monopole.dat",Flatten[outputInfLogCoeffs,1]]
 
 
-(AbsoluteTime[]-t1)/60
+Print[(AbsoluteTime[]-t1)/60]
