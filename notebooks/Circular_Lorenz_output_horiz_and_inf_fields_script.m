@@ -670,8 +670,7 @@ horizCoeffs[[8,i+1]]=b[8][i]/.GaugeExpansionReplacementH[8]/.replace;,
 
 infCoeffs[[2,i+1]]=a[2][i]/.GaugeExpansionReplacement\[Infinity][2]/.replace;,
 infCoeffs[[4,i+1]]=a[4][i]/.GaugeExpansionReplacement\[Infinity][4]/.replace;,
-infCoeffs[[8,i+1]]=a[8][i]/.GaugeExpansionReplacement\[Infinity][8]/.replace;,
-
+infCoeffs[[8,i+1]]=a[8][i]/.GaugeExpansionReplacement\[Infinity][8]/.replace;
 }
 ,{i,0,7}]
 ];
