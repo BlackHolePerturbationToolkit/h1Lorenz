@@ -22,7 +22,11 @@
 t1=AbsoluteTime[];
 
 M=1;
-r0=7+7/10;
+
+r0Int  =  ToExpression[($CommandLine)[[-2]]];
+r0Frac =  ToExpression[($CommandLine)[[-1]]];
+
+r0=r0Int + r0Frac/10;
 
 lmin=0;
 lmax=50;
