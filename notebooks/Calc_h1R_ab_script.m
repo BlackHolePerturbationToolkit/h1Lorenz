@@ -19,7 +19,9 @@
 
 
 
-r0=8.1;
+r0= ToExpression[($CommandLine)[[-1]]];
+
+Print["r0 = ", r0];
 
 
 (*SetDirectory[NotebookDirectory[]<>"h1_ab data/hlmi/"];*)
