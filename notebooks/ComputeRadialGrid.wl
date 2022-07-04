@@ -33,7 +33,10 @@ U3Region=Table[r,{r,1000,10^4,4}][[2;;]];
 grid=Union@N[Join[V1Region,V2Region,TRegion,U1Region,U2Region,U3Region]];
 
 
-importantIndexes=Flatten[{Position[grid,r0-\[CapitalDelta]r0],Position[grid,r0],Position[grid,r0+\[CapitalDelta]r0]}];
+importantIndexes=Flatten[{Nearest[grid->"Index",r0-\[CapitalDelta]r0],Nearest[grid->"Index",r0],Nearest[grid->"Index",r0+\[CapitalDelta]r0]}];
+
+
+If[Length[importantIndexes]=!=3,Abort[]];
 
 
 Nr0[r_Integer]:=r
