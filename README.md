@@ -3,6 +3,8 @@
 This repository contains code to compute the first-order (in the mass-ratio) Lorenz-gauge metric perturbation
 from a particle in a circular orbit about a Schwarzschild black hole.
 
+The code computes the tensor spherical harmonic modes of the metric perturbation and its first radial derivative on a supplied grid of radial values.
+The spherical harmonic basis used is the Barack-Lousto-Sago basis.
 This code is a modified version of the code developed for [arXiv:1308.5223](https://arxiv.org/abs/1308.5223)
 
 ### Dependencies and compilation
@@ -23,7 +25,10 @@ where ``$numprocs`` should be at least 2 as one core is used to distribute work 
 
 ### Output
 
-The data is saved into the /data in HDF5 format. The metric perturbation is outputted in the Barack-Lousto-Sago basis.
+The data is saved into the /data in HDF5 format. 
+There is a Mathematica notebook (Loadh1Lorenz.nb) in the notebooks/ subfolder which shows how to read in the data.
+
+In general the l=even, m=0 modes are not computed correctly
 
 ### ToDo
 
