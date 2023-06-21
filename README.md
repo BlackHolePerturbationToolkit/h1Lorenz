@@ -5,7 +5,9 @@ from a particle in a circular orbit about a Schwarzschild black hole.
 
 This code is a modified version of the code developed for [arXiv:1308.5223](https://arxiv.org/abs/1308.5223)
 
-### Compile
+### Dependencies and compilation
+
+This software needs the GNU Scientific Library, Scons, and OpenMPI to compile and run.
 
 Compile using `scons`
 

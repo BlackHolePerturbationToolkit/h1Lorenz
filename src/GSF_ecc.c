@@ -56,7 +56,7 @@ int verbose 		= 1;									//!< Set to zero in order reduce the console output o
 
 int abs_error_threshold_fix = 1;							//! Set to one in order to implement the proto-type absolute error thresholding fix
 
-int output_hom 		= 1;
+int output_hom 		= 1;									//! Set to 1 to also output the basis of homogeneous solutions
 
 static pthread_t thread_id;
 
