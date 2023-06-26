@@ -15,27 +15,27 @@ Compile using `scons`
 
 ### Usage
 
-In the inputs directory you will find the grids we currently use in the project. If you want to generate your own grid, use Mathematica notebook in notebooks/ComputeRadialGrid.nb.
+First you need to generate an input grid. For this you can use the Mathematica notebook in notebooks/ComputeRadialGrid.nb.
 
 To run the code use:
 
-`mpirun -n $numprocs ./h1Lorenz r0 lmax`
+`mpirun -n $numprocs ./h1Lorenz r0 lmax gridfile outdir`
 
-where ``$numprocs`` should be at least 2 as one core is used to distribute work to the other cores (note: I've not tested how well the code works with n >= 2 in a long time), `r0` is the particle's radius (in Schwarzschild coordinates), and `lmax` is the maximum l value to compute.
+where ``$numprocs`` should be at least 2 as one core is used to distribute work to the other cores (note: we've not tested how well the code works with n >= 2 in a long time), `r0` is the particle's radius (in Schwarzschild coordinates), `lmax` is the maximum l value to compute, gridfile is the location of the gridfile, and outdir is the output directory.
+
+For example, after runnign the ComputeRadialGrid.nb notebook for r0=8.1 you could run
+
+`./mpirun -n 2 15 input/radial_grid_r8.1.h5 data/fields_r8.1/`
 
 ### Output
 
-The data is saved into the /data in HDF5 format. 
+The code output the all the components of the first-order metric perturbation in the Lorenz gauge. For some modes, some of the asymptotic amplitudes are also computed.
+The data is saved using the HDF5 format. 
 There is a Mathematica notebook (Loadh1Lorenz.nb) in the notebooks/ subfolder which shows how to read in the data.
 
-In general the l=even, m=0 modes are not computed correctly
 
-### ToDo
+In general the l=even, m=0 modes are not computed accurately (or at all) due to long integration regions for the homogeneous solutions. For now and so these should be replaced with another calculation.
 
- - Add calculation of C_in/C_out and expansion near horizon
- - Add calculation of F^R and h^{R1}_{ab}
- 
-The above are current performed in a separate Mathematica code which is repeating some of this calculation of this code. Be nice to have it all done in a single, fast code run.
 
 ### Authors
 
