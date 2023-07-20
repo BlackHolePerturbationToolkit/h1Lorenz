@@ -13,7 +13,7 @@
 
 extern const double DESIRED_INVERT_ACCURACY;
 
-double e, p;
+extern double e, p;
 extern double M;
 
 double R8_out_odd_static_n_zero(double r_chi, int l);
