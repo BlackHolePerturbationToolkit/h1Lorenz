@@ -23,9 +23,9 @@ To run the code use:
 
 where ``$numprocs`` should be at least 2 as one core is used to distribute work to the other cores (note: we've not tested how well the code works with n >= 2 in a long time), `r0` is the particle's radius (in Schwarzschild coordinates), `lmax` is the maximum l value to compute, gridfile is the location of the gridfile, and outdir is the output directory.
 
-For example, after runnign the ComputeRadialGrid.nb notebook for r0=8.1 you could run
+For example, after running the ComputeRadialGrid.nb notebook for r0=8.1 you could compute lm-modes up to l=15 using
 
-`./mpirun -n 2 15 input/radial_grid_r8.1.h5 data/fields_r8.1/`
+`mpirun -n 2 ./h1Lorenz 15 input/radial_grid_r8.1.h5 data/fields_r8.1/`
 
 ### Output
 
