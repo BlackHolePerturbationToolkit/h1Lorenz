@@ -1,0 +1,41 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: h1Lorenz
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file and by including the
+  acknowledgment "This work makes use of the Black Hole
+  Perturbation Toolkit." in any papers.
+type: software
+authors:
+  - given-names: Niels
+    family-names: Warburton
+    email: niels.warburton@ucd.ie
+    affiliation: University College Dublin
+    orcid: 'https://orcid.org/0000-0003-0914-8645'
+  - given-names: Sarp
+    family-names: Akcay
+    email: sarp.akcay@ucd.ie
+    affiliation: University College Dublin
+    orcid: 'https://orcid.org/0000-0003-2216-421X'
+repository-code: 'https://github.com/BlackHolePerturbationToolkit/h1Lorenz'
+abstract: >-
+  Code to compute the first-order (in the mass-ratio)
+  Lorenz-gauge metric perturbation from a particle in a
+  circular orbit about a Schwarzschild black hole.
+references:
+  - authors:
+      - given-names: Sarp
+        family-names: Akcay
+        affiliation: University of Southampton
+      - given-names: Niels
+        family-names: Warburton
+        affiliation: University College Dublin
+      - given-names: Leor
+        family-names: Barack
+        affiliation: University of Southampton
+    title: Frequency-domain algorithm for the Lorenz-gauge gravitational self-force
+    type: article
+    doi: 10.1103/PhysRevD.88.104009
