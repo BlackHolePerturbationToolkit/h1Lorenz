@@ -26,5 +26,8 @@ void even_static_in_bcs(double* a0s, struct boundary_conditions *bcs);
 void odd_out_bcs(double* a0s, struct boundary_conditions *bcs);
 void odd_in_bcs(double* a0s, struct boundary_conditions *bcs);
 
+/* record the inner (horizon) series coefficients of the next *_in_bcs call into buf[k*n + order] (n = 0: off) */
+void bc_record_series(double complex *buf, int n);
+
 
 

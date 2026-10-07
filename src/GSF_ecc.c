@@ -24,6 +24,7 @@
 #include "gauge_fields.h"
 #include "gauge_fields_on_grid.h"
 #include "static_monopole.h"
+#include "horizon_series.h"
 #include "convergence_tests.h"
 #include "file_output.h"
 #include "grid.h"
@@ -430,6 +431,29 @@ int main(int argc, char *argv[])
 					
 					free(data);
 					free(data2);	
+
+					// Expansion of every output field about the horizon (see horizon_series.c)
+					{
+						const int K = HORIZON_SERIES_TERMS;
+						int nft = cset->num_coupled_fields + cset->num_gauge_fields;
+						double complex *hs = calloc((size_t) nft*K, sizeof(double complex));
+						if (horizon_series(cset, &n_mode, &orbit, K, hs) > 0) {
+							dims[0] = K;
+							dims[1] = 2*nft;
+							data = malloc(sizeof(double)*K*2*nft);
+							for (i = 0; i < K; i++)
+								for (j = 0; j < nft; j++) {
+									data[i*2*nft + 2*j + 0] = creal(hs[j*K + i]);
+									data[i*2*nft + 2*j + 1] = cimag(hs[j*K + i]);
+								}
+							H5LTmake_dataset_double(file_id, "horizon", 2, dims, data);
+							H5LTset_attribute_string(file_id, "horizon", "description",
+								"h(r) = exp(-i m Omega r*) sum_n c_n (r - 2M)^n, r* = r + 2M log(r/2M - 1); "
+								"row n, columns Re/Im of each field in the order of inhom_left");
+							free(data);
+						}
+						free(hs);
+					}
 			
 					// Close the file.
 					H5Fclose(file_id);
