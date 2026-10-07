@@ -81,13 +81,15 @@ typedef void (*function_ptr)(double, struct n_mode_data*, struct orbital_params*
 int main(int argc, char *argv[])
 {
     char *outdir, *gridfile;
-    if( argv[1] != NULL && argv[2] != NULL && argc == 5){
+    if( argv[1] != NULL && argv[2] != NULL && (argc == 5 || (argc == 6 && strcmp(argv[5], "--hom") == 0))){
 		p = (double)strtod(argv[1], NULL);
 		l_max = (double) strtod(argv[2], NULL);
 		gridfile = argv[3];
 		outdir = argv[4];
+		if (argc == 6) output_hom = 1;
     }else{
-		printf("Usage: h1Lorenz <p> <lmax> <gridfile> <outdir>\n");
+		printf("Usage: h1Lorenz <p> <lmax> <gridfile> <outdir> [--hom]\n");
+		printf("  --hom: also output the basis of homogeneous solutions (hom_in, hom_out)\n");
         exit(0);
     }	
 	
