@@ -456,6 +456,31 @@ int main(int argc, char *argv[])
 						}
 						free(hs);
 					}
+					// Expansion of every output field at infinity (see horizon_series.c)
+					{
+						const int K = HORIZON_SERIES_TERMS;
+						int nft = cset->num_coupled_fields + cset->num_gauge_fields;
+						double complex *hb = calloc((size_t) nft*K, sizeof(double complex)), *hc = calloc((size_t) nft*K, sizeof(double complex));
+						if (infinity_series(cset, &n_mode, &orbit, K, hb, hc) > 0) {
+							dims[0] = K;
+							dims[1] = 2*nft;
+							data = malloc(sizeof(double)*K*2*nft);
+							for (int pass = 0; pass < 2; pass++) {
+								const double complex *src = pass ? hc : hb;
+								for (i = 0; i < K; i++)
+									for (j = 0; j < nft; j++) {
+										data[i*2*nft + 2*j + 0] = creal(src[j*K + i]);
+										data[i*2*nft + 2*j + 1] = cimag(src[j*K + i]);
+									}
+								H5LTmake_dataset_double(file_id, pass ? "infinity_log" : "infinity", 2, dims, data);
+							}
+							H5LTset_attribute_string(file_id, "infinity", "description",
+								"h(r) = exp(i m Omega r*) sum_n (b_n + c_n log r)/r^n, r* = r + 2M log(r/2M - 1); "
+								"b_n here, c_n in infinity_log; row n, columns Re/Im of each field in the order of inhom_right");
+							free(data);
+						}
+						free(hb); free(hc);
+					}
 			
 					// Close the file.
 					H5Fclose(file_id);

@@ -290,6 +290,7 @@ void even_dipole_out_bcs(double* a0s, struct boundary_conditions *bcs)
 	
 		double r_out 	= r_of_rs(rs_out);
 		int j_max 		= 5;
+		if (bc_nseries + 3 > j_max) j_max = bc_nseries + 3;
 		double l 		= bcs->l;
 		double omega	= bcs->omega;
 
@@ -353,6 +354,10 @@ void even_dipole_out_bcs(double* a0s, struct boundary_conditions *bcs)
 		double complex diff_sum7 = 1.0*I*w*a7[3];
 	
 	
+		BC_REC(0, 0, a1[3]);
+		BC_REC(1, 0, a3[3]);
+		BC_REC(2, 0, a5[3]);
+		BC_REC(3, 0, a6[3]);
 		for ( j = 4; j < j_max; j++ )
 		{ 
 			C1 = (j-4)*(j-3)+4.0*I*w*(j-4)-2.0-L;
@@ -372,6 +377,10 @@ void even_dipole_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			a3[4] = ( C1*a3[3] + 2.0*(a1[3]- a5[3] -a6[3]) + D1*a3[2] + 4.0*(-a1[2]+ a5[2] +3.0*a6[2]) + E1*a3[1] - 16.0*a6[1] ) /( 2.0*I*w*(j-3) );
 			a6[4] = ( C1*a6[3] + 2.0*(a1[3]- a5[3] -a3[3]) + D1*a6[2] + 4.0*(-a1[2]+ a5[2] +3.0*a3[2]) + E1*a6[1] - 16.0*a3[1] ) /( 2.0*I*w*(j-3) );
 			a5[4] = ( C5*a5[3] + 2.0*L*(a1[3]-a3[3]-a6[3]) + 2.0*a7[3] + D5*a5[2] + 2.0*L*(-2.0*a1[2] + 4.0*a3[2] + 5.0*a6[2]) -10.0*a7[2] + E5*a5[1] + 4.0*(-2.0*L*a3[1] -3.0*L*a6[1] + 3.0*a7[1]) ) /( 2.0*I*w*(j-3) );
+			BC_REC(0, j - 3, a1[4]);
+			BC_REC(1, j - 3, a3[4]);
+			BC_REC(2, j - 3, a5[4]);
+			BC_REC(3, j - 3, a6[4]);
 			a7[4] = ( C7*a7[3] +2.0*lambda*a5[3] + D7*a7[2] -4.0*lambda*a5[2] + E7*a7[1] ) /( 2.0*I*w*(j-3) );
 	
 			sum1 = sum1 + a1[4]/pow( r_out, j-3.0);
@@ -611,6 +620,7 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 
 	   	int j;    // j = k+3 where k is the actual index used in analytic work.
 		int j_max = 5;
+		if (bc_nseries + 3 > j_max) j_max = bc_nseries + 3;
 		double L = l*(l+1.0);
 		double lambda = (l+2.0)*(l-1.0);
 		double w = bcs->omega;
@@ -729,6 +739,11 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 		double complex diff_sum7 = 1.0*I*w*a7[3];
 	
 	
+		BC_REC(0, 0, a1[3]);
+		BC_REC(1, 0, a3[3]);
+		BC_REC(2, 0, a5[3]);
+		BC_REC(3, 0, a6[3]);
+		BC_REC(4, 0, a7[3]);
 		for ( j = 4; j < j_max; j++ )
 		{ 
 			C1 = (j-4)*(j-3)+4.0*I*w*(j-4)-2.0-L;
@@ -749,6 +764,11 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			a6[4] = ( C1*a6[3] + 2.0*(a1[3]- a5[3] -a3[3]) + D1*a6[2] + 4.0*(-a1[2]+ a5[2] +3.0*a3[2]) + E1*a6[1] - 16.0*a3[1] ) /( 2.0*I*w*(j-3) );
 			a5[4] = ( C5*a5[3] + 2.0*L*(a1[3]-a3[3]-a6[3]) + 2.0*a7[3] + D5*a5[2] + 2.0*L*(-2.0*a1[2] + 4.0*a3[2] + 5.0*a6[2]) -10.0*a7[2] + E5*a5[1] + 4.0*(-2.0*L*a3[1] -3.0*L*a6[1] + 3.0*a7[1]) ) /( 2.0*I*w*(j-3) );
 			a7[4] = ( C7*a7[3] +2.0*lambda*a5[3] + D7*a7[2] -4.0*lambda*a5[2] + E7*a7[1] ) /( 2.0*I*w*(j-3) );
+			BC_REC(0, j - 3, a1[4]);
+			BC_REC(1, j - 3, a3[4]);
+			BC_REC(2, j - 3, a5[4]);
+			BC_REC(3, j - 3, a6[4]);
+			BC_REC(4, j - 3, a7[4]);
 	
 			sum1 = sum1 + a1[4]/pow( r_out, j-3.0);
 			sum3 = sum3 + a3[4]/pow( r_out, j-3.0);
@@ -983,6 +1003,7 @@ void odd_out_bcs(double* a0s, struct boundary_conditions *bcs)
 
 		int j, k;    // j = k+2 where k is the actual index used in analytic work.
 		int j_max = 5;
+		if (bc_nseries + 2 > j_max) j_max = bc_nseries + 2;
 		double L = l*(l+1.0);
 		double lambda = (l+2.0)*(l-1.0);
 
@@ -1068,6 +1089,8 @@ void odd_out_bcs(double* a0s, struct boundary_conditions *bcs)
 		double complex diff_sum10 = I*w*a10[2];
 
 
+		BC_REC(0, 0, a9[2]);
+		BC_REC(1, 0, a10[2]);
 		for ( j = 3; j <= j_max; j++ )
 		{
 			k = j - 2;
@@ -1080,6 +1103,8 @@ void odd_out_bcs(double* a0s, struct boundary_conditions *bcs)
 
 			a9[3] = ( C*a9[2]+D*a9[1]+E*a9[0]+F*a10[2]+G*a10[1] + H*a10[0] ) / (2.0*I*w*k ); // recursion relation for the b9_k's
 			a10[3] = ( Ii*a10[2]+J*a10[1]+K*a10[0]+N*a9[2]+P*a9[1] ) / (2.0*I*w*k );
+			BC_REC(0, j - 2, a9[3]);
+			BC_REC(1, j - 2, a10[3]);
 
 			sum9 += a9[3] / pow( r_out, j-2.0);
 			diff_sum9 += (I*w*a9[3]/pow(r_out, j-2.0) - (1.0-2.0/r_out)*(j-2.0)*a9[3]/pow(r_out,j-1.0));

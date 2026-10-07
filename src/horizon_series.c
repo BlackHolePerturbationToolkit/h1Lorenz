@@ -171,3 +171,107 @@ int horizon_series(struct coupled_set *cset, struct n_mode_data *n_mode, struct 
 	free(P);
 	return nf;
 }
+
+
+/* --- expansion at infinity -------------------------------------------------------------
+ * h^i(r) = exp(i omega r*) sum_{n < K} (b^i_n + c^i_n log r)/r^n. The coupled fields come from the
+ * series of the outer boundary conditions of each basis solution combined with C_out; the gauge
+ * fields from the gauge conditions with the outgoing phase; the static monopole (with log r terms)
+ * and the static odd modes from their closed forms. Even static modes: not computed (returns 0). */
+void monopole_infinity_series(double r0, double b[3][12], double c[3][12]);
+
+/* series in y = 1/r: d/dr y^n = -n y^(n+1) (the last coefficient is lost) */
+static void yser_deriv(const double complex *a, double complex *d, int K) { int n; d[0] = 0; for (n = 1; n < K; n++) d[n] = -(n - 1)*a[n-1]; }
+static void yser_f(double complex *a, int K) { int n; for (n = 0; n < K; n++) a[n] = 0; a[0] = 1.0; if (K > 1) a[1] = -2.0; }
+static void yser_y(double complex *a, int K) { int n; for (n = 0; n < K; n++) a[n] = 0; if (K > 1) a[1] = 1.0; }
+
+/* gauge field from the gauge condition with the outgoing phase: R = exp(i w r*) P,
+ * R' = exp(i w r*) (P' + i w P/f), so (i f/w) (R_a' + g/r) -> exp(i w r*) [(i f/w) (P_a' + g/r) - P_a] */
+static void gauge_field_inf(const double complex *Pa, const double complex *g, double omega, double complex *out, int K)
+{
+	double complex *f = malloc(K*sizeof(double complex)), *y = malloc(K*sizeof(double complex)), *t = malloc(K*sizeof(double complex));
+	int n;
+	yser_f(f, K); yser_y(y, K);
+	yser_deriv(Pa, t, K);
+	ser_mul(g, y, out, K);
+	for (n = 0; n < K; n++) t[n] += out[n];
+	ser_mul(f, t, t, K);
+	for (n = 0; n < K; n++) out[n] = I/omega*t[n] - Pa[n];
+	free(f); free(y); free(t);
+}
+
+int infinity_series(struct coupled_set *cset, struct n_mode_data *n_mode, struct orbital_params *orbit, int Kout,
+                    double complex *out_b, double complex *out_c)
+{
+	const int l = (int) lround(n_mode->l), m = (int) lround(n_mode->m);
+	const double omega = n_mode->omega;
+	const int K = Kout;                           /* d/dr raises the order: no extra term needed */
+	const int nc = cset->num_coupled_fields, ng = cset->num_gauge_fields, nf = nc + ng;
+	double complex *P = calloc((size_t) nf*K, sizeof(double complex)), *Pl = calloc((size_t) nf*K, sizeof(double complex));
+	int i, d, n, k;
+
+	if (l == 0 && m == 0) {
+		double b[3][12], c[3][12];
+		monopole_infinity_series(orbit->p, b, c);
+		for (i = 0; i < 3; i++)
+			for (n = 0; n < K && n < 12; n++) { P[i*K + n] = b[i][n]; Pl[i*K + n] = c[i][n]; }
+	} else if (m == 0 && (l % 2) == 0) {
+		free(P); free(Pl);
+		return 0;
+	} else if (m == 0) {
+		/* static odd: h8 = c_out sum_k c_k / r^(l+k) (libSch.c), h9 = h10 = 0; odd dipole: h9 = A/r^2 */
+		const double c_out = -4.0*16.0*M_PI*orbit->L*normalized_associated_legendre_P_theta_deriv(l, 0, M_PI/2.0)
+		                     *R8_integrate_static_component(orbit, n_mode, 2 /* OUT_RE */);
+		double ck = 1.0;
+		for (k = 0; l + k < K; k++) {
+			P[(nf - 1)*K + l + k] = c_out*ck;
+			ck = 2.0*ck*((k + l)*(k + l + 1.0) - 2.0)/((k + 1.0)*(k + 2.0*l + 2.0));
+		}
+		if (l == 1 && K > 2) P[0*K + 2] += -256.0/3.0*sqrt(3.0*M_PI)*orbit->E*orbit->Omega_phi/(orbit->p - 2.0);
+	} else {
+		double complex *S = malloc((size_t) nc*K*sizeof(double complex));
+		double *a0s = malloc(nc*sizeof(double));
+		struct boundary_conditions bcs;
+		bcs.R = malloc(nc*sizeof(double complex));
+		bcs.R_rs_deriv = malloc(nc*sizeof(double complex));
+		bcs.l = n_mode->l;
+		bcs.omega = omega;
+		for (d = 0; d < nc; d++) {
+			for (k = 0; k < nc; k++) a0s[k] = (k == d) ? 1.0 : 0.0;
+			for (n = 0; n < nc*K; n++) S[n] = 0;
+			bc_record_series(S, K);
+			cset->out_bc_func(a0s, &bcs);
+			bc_record_series(NULL, 0);
+			for (i = 0; i < nc; i++)
+				for (n = 0; n < K; n++) P[i*K + n] += n_mode->C_out[d]*S[i*K + n];
+		}
+		free(S); free(a0s); free(bcs.R); free(bcs.R_rs_deriv);
+
+		double complex *g = malloc(K*sizeof(double complex)), *f = malloc(K*sizeof(double complex)), *t = malloc(K*sizeof(double complex));
+		yser_f(f, K);
+		if ((l + m) % 2 == 0) {
+			const double complex *P1 = P, *P3 = P + K, *P5 = P + 2*K, *P6 = P + 3*K;
+			const double complex *P7 = (nc > 4) ? P + 4*K : NULL;
+			double complex *Pa = malloc(K*sizeof(double complex));
+			ser_mul(f, P3, t, K);
+			for (n = 0; n < K; n++) Pa[n] = P1[n] - t[n];
+			ser_mul(f, P6, g, K);
+			for (n = 0; n < K; n++) g[n] = P3[n] - 2.0*t[n] + P1[n] - P5[n] - 2.0*g[n];
+			gauge_field_inf(Pa, g, omega, P + nc*K, K);
+			if (ng > 1) {
+				for (n = 0; n < K; n++) g[n] = 2.0*P5[n] + l*(l + 1.0)*P6[n] - (P7 ? P7[n] : 0.0);
+				gauge_field_inf(P5, g, omega, P + (nc + 1)*K, K);
+			}
+			free(Pa);
+		} else {
+			const double complex *P9 = P, *P10 = (nc > 1) ? P + K : NULL;
+			for (n = 0; n < K; n++) g[n] = 2.0*P9[n] - (P10 ? P10[n] : 0.0);
+			gauge_field_inf(P9, g, omega, P + nc*K, K);
+		}
+		free(g); free(f); free(t);
+	}
+	for (i = 0; i < nf; i++)
+		for (n = 0; n < Kout; n++) { out_b[i*Kout + n] = P[i*K + n]; out_c[i*Kout + n] = Pl[i*K + n]; }
+	free(P); free(Pl);
+	return nf;
+}
