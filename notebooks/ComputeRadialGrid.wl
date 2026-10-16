@@ -5,19 +5,24 @@
      gridR1, gridR2  outside the worldtube the spacing is 0.1 up to gridR1, 0.5 up to gridR2, 4 up to 10^4  [100, 1000]
      gridRefine   k: k times finer spacings outside the worldtube  [1]
      gridRmax     extend the grid beyond 10^4 with spacing 8/gridRefine up to gridRmax  [10^4]
+     gridInnerRefine  k: k times finer spacings between the horizon and the worldtube (V1: 500 k points uniform in r*
+                  from rin to 2.5 M; V2: spacing 0.01/k from 2.5 M to r0 - gridDeltaR0)  [1]
+     gridRinExp   n: the grid starts at rin = 2 + 10^-n  [5]
    With the defaults (and r0 + gridDeltaR0 < 100) the grid is the original construction, unchanged. *)
 \[CapitalDelta]r0=If[NumericQ[gridDeltaR0],gridDeltaR0,If[r0<=20,2,4]];
 gridOptR1=If[NumericQ[gridR1],gridR1,100];
 gridOptR2=If[NumericQ[gridR2],gridR2,1000];
 gridOptK=If[NumericQ[gridRefine],gridRefine,1];
 gridOptRmax=If[NumericQ[gridRmax],gridRmax,10^4];
+gridOptKin=If[NumericQ[gridInnerRefine],gridInnerRefine,1];
+gridOptRin=If[NumericQ[gridRinExp],gridRinExp,5];
 
 
 M=1;
 
 
 V1Boundary = 2+1/2M;
-rin = 2+10^-5;
+rin = 2+10^-gridOptRin;
 
 
 rs[r_]:=r+2 Log[-1+r/2]
@@ -26,14 +31,14 @@ rs[r_]:=r+2 Log[-1+r/2]
 rOfrs[rs1_]:=r/.Quiet@FindRoot[rs[r]==rs1,{r,2+10^-10,100},WorkingPrecision->30]
 
 
-rsValues=Subdivide[rs[rin],rs[V1Boundary],500];
+rsValues=Subdivide[rs[rin],rs[V1Boundary],500 gridOptKin];
 
 
 rValues=rOfrs/@rsValues;
 
 
 V1Region = rValues;
-V2Region = Range[V1Boundary,r0-\[CapitalDelta]r0,0.01][[2;;]];
+V2Region = If[gridOptKin==1,Range[V1Boundary,r0-\[CapitalDelta]r0,0.01],Range[V1Boundary,r0-\[CapitalDelta]r0,1/(100gridOptKin)]][[2;;]];
 TRegion  = Range[r0-\[CapitalDelta]r0,r0+\[CapitalDelta]r0,0.01][[2;;]];
 (* outside the worldtube. r0 + Delta r0 >= 100: Range[r0 + Delta r0, 100, 0.1] is empty, so the regions are selected by r instead *)
 URegions = If[r0+\[CapitalDelta]r0<100,
