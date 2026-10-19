@@ -10,7 +10,7 @@
 #include "Runge-Kutta.h"
 #include "ode_systems.h"
 
-extern const double RUNGE_KUTTA_ACCURACY;				//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
+extern double RUNGE_KUTTA_ACCURACY;				//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
 
 void integrate_out_field(struct orbital_params *orbit, struct n_mode_data *n_mode)
 {

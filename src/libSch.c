@@ -11,7 +11,7 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_lambert.h>
 
-extern const double DESIRED_INVERT_ACCURACY;
+extern double DESIRED_INVERT_ACCURACY;
 
 extern double e, p;
 extern double M;

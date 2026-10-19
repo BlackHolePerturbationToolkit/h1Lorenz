@@ -41,8 +41,8 @@ int abs_n_max 	= 20;					//!< The absolute maximum n that will be computed. The 
 int n_min		= 0;			
 
 double MATCHING_INTEGRATION_ACCURACY 		= 1e-12;		//!< Sets the accuracy on the integration that calculates the scaling coefficients (method of EHS)
-const double RUNGE_KUTTA_ACCURACY 			= 1e-12; 		//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
-const double DESIRED_INVERT_ACCURACY 		= 1e-12;		//!< Sets the desired accuacy on the tortoise inverter
+double RUNGE_KUTTA_ACCURACY 				= 1e-12; 		//!< Sets the relative and absolute accuracy of the GSL Runge-Kutta algorithm
+double DESIRED_INVERT_ACCURACY 			= 1e-12;		//!< Sets the desired accuacy on the tortoise inverter
 const double DESIRED_FUNCTION_ACCURACY 		= 1e-12;		//!< Sets the desired function accuracy for the wrappers around various GSL functions
 
 const double n_convergence_threshold 		= 3e-8;			//!< The desired accuracy when comparing the jump in the fields with the time-domain source
@@ -80,6 +80,10 @@ typedef void (*function_ptr)(double, struct n_mode_data*, struct orbital_params*
 
 int main(int argc, char *argv[])
 {
+    // accuracy overrides for convergence tests: H1L_RK_ACC (Runge-Kutta relative and absolute accuracy) and
+    // H1L_INVERT_ACC (tortoise-coordinate inversion), both 1e-12 by default
+    if (getenv("H1L_RK_ACC") != NULL) RUNGE_KUTTA_ACCURACY = strtod(getenv("H1L_RK_ACC"), NULL);
+    if (getenv("H1L_INVERT_ACC") != NULL) DESIRED_INVERT_ACCURACY = strtod(getenv("H1L_INVERT_ACC"), NULL);
     char *outdir, *gridfile;
     if( argv[1] != NULL && argv[2] != NULL && (argc == 5 || (argc == 6 && strcmp(argv[5], "--hom") == 0))){
 		p = (double)strtod(argv[1], NULL);
