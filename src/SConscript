@@ -36,10 +36,13 @@ env['LIBPATH']  = ['/usr/lib/x86_64-linux-gnu/hdf5/serial/', '/opt/homebrew/lib'
 env['LIBS']     = ['gsl' , 'gslcblas', 'hdf5', 'hdf5_hl', 'm']
 env['CC']       = 'mpicc'
 env['CPPPATH']  = ['../include', '/usr/include/hdf5/serial', '/opt/homebrew/include']
-# an active conda environment (e.g. miniforge with gsl, hdf5, openmpi): its headers and libraries first
+# an active conda environment (e.g. miniforge with gsl, hdf5, openmpi): only its headers and libraries. The conda compilers put
+# $CONDA_PREFIX/include on the system include path, and GCC ignores a -I for a system directory, so system headers named
+# with -I (e.g. /usr/include/hdf5/serial, HDF5 1.10) would shadow the environment's and mismatch its library (chirp2, 2026-10-23)
 conda = os.environ.get('CONDA_PREFIX')
 if conda and os.path.isdir(conda):
-  env.Prepend(LIBPATH=[conda + '/lib'], CPPPATH=[conda + '/include'])
+  env['CPPPATH'] = ['../include', conda + '/include']
+  env['LIBPATH'] = [conda + '/lib']
   env.Append(RPATH=[conda + '/lib'])
 env['CCFLAGS']  = ['-Wall', '-Wno-unused-variable', '-g', '-O2', '-DGSL_COMPLEX_LEGACY']
 
