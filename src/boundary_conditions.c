@@ -102,7 +102,7 @@ void monopole_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			//printf("k=%d\td1=%e\td3=%e\td6=%e\n", j-3, delta1[j], delta3[j], delta6[j] );
 	
 			if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta6 >= 1e-14 )
-			{ j_max = j_max+1; }
+			{ if (bc_nseries == 0) j_max = j_max+1; }
 
 			a1[0] = a1[1];  
 			a1[1] = a1[2];
@@ -236,7 +236,7 @@ void monopole_in_bcs(double* a0s, struct boundary_conditions *bcs)
 		//printf("%e\t%e\t%e\n", delta1, delta3, delta6);
 
 	        if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta6 >= 1e-14  )
-	        { j_max = j_max+1; }
+	        { if (bc_nseries == 0) j_max = j_max+1; }
 
 		b1[0] = b1[1];  
 		b1[1] = b1[2];
@@ -398,7 +398,7 @@ void even_dipole_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			delta1 = cabs( a1[4]/pow( r_out, j-3.0) ); delta3 = cabs( a3[4]/pow( r_out, j-3.0) ); delta5 = cabs( a5[4]/pow( r_out, j-3.0) ); delta6 = cabs( a6[4]/pow( r_out, j-3.0) ); delta7 = cabs( a7[4]/pow( r_out, j-3.0) );
 
 			if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta5 >= 1e-14 || delta6 >= 1e-14 || delta7 >= 1e-14  )
-			{ j_max = j_max+1; }
+			{ if (bc_nseries == 0) j_max = j_max+1; }
 
 			a1[0] = a1[1];  
 			a1[1] = a1[2];
@@ -544,7 +544,7 @@ void even_dipole_in_bcs(double* a0s, struct boundary_conditions *bcs)
 		//printf("k=%d   b1= %.14f + I*(%.14f)\tb3 = %.14f +I*(%.14f)\tb5 = %.14f +I*(%.14f)\tb6 = %.14f +I*(%.14f)\tb7 = %.14f +I*(%.14f)\n", j-3, creal(b1[4]), cimag(b1[4]), creal(b3[4]), cimag(b3[4]), creal(b5[4]), cimag(b5[4]), creal(b6[4]), cimag(b6[4]), creal(b7[4]), cimag(b7[4]) );
 
 	       if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta5 >= 1e-14 || delta6 >= 1e-14 || delta7 >= 1e-14  )
-	       { j_max = j_max+1; }
+	       { if (bc_nseries == 0) j_max = j_max+1; }
 
 		b1[0] = b1[1];  
 		b1[1] = b1[2];
@@ -786,7 +786,7 @@ void even_out_bcs(double* a0s, struct boundary_conditions *bcs)
 			delta1 = cabs( a1[4]/pow( r_out, j-3.0) ); delta3 = cabs( a3[4]/pow( r_out, j-3.0) ); delta5 = cabs( a5[4]/pow( r_out, j-3.0) ); delta6 = cabs( a6[4]/pow( r_out, j-3.0) ); delta7 = cabs( a7[4]/pow( r_out, j-3.0) );
 
 		       if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta5 >= 1e-14 || delta6 >= 1e-14 || delta7 >= 1e-14  )
-		       { j_max = j_max+1; }	
+		       { if (bc_nseries == 0) j_max = j_max+1; }	
 
 			a1[0] = a1[1];  
 			a1[1] = a1[2];
@@ -944,7 +944,7 @@ void even_in_bcs(double* a0s, struct boundary_conditions *bcs)
 		//printf("k=%d   b1= %.14f + I*(%.14f)\tb3 = %.14f +I*(%.14f)\tb5 = %.14f +I*(%.14f)\tb6 = %.14f +I*(%.14f)\tb7 = %.14f +I*(%.14f)\n", j-3, creal(b1[4]), cimag(b1[4]), creal(b3[4]), cimag(b3[4]), creal(b5[4]), cimag(b5[4]), creal(b6[4]), cimag(b6[4]), creal(b7[4]), cimag(b7[4]) );
 
 	       if ( delta1 >= 1e-14 || delta3 >= 1e-14 || delta5 >= 1e-14 || delta6 >= 1e-14 || delta7 >= 1e-14  )
-	       { j_max = j_max+1; }
+	       { if (bc_nseries == 0) j_max = j_max+1; }
 
 		b1[0] = b1[1];  
 		b1[1] = b1[2];
