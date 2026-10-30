@@ -58,6 +58,8 @@ int verbose 		= 1;									//!< Set to zero in order reduce the console output o
 int abs_error_threshold_fix = 1;							//! Set to one in order to implement the proto-type absolute error thresholding fix
 
 int output_hom 		= 0;									//! Set to 1 to also output the basis of homogeneous solutions
+int hom_lmax		= -1;									//! Output the homogeneous basis only for l <= hom_lmax (-1: all l)
+int hom_mmin		= 0;									//! Output the homogeneous basis only for m >= hom_mmin
 
 static pthread_t thread_id;
 
@@ -85,15 +87,22 @@ int main(int argc, char *argv[])
     if (getenv("H1L_RK_ACC") != NULL) RUNGE_KUTTA_ACCURACY = strtod(getenv("H1L_RK_ACC"), NULL);
     if (getenv("H1L_INVERT_ACC") != NULL) DESIRED_INVERT_ACCURACY = strtod(getenv("H1L_INVERT_ACC"), NULL);
     char *outdir, *gridfile;
-    if( argv[1] != NULL && argv[2] != NULL && (argc == 5 || (argc == 6 && strcmp(argv[5], "--hom") == 0))){
+    int args_ok = (argc >= 5 && argv[1] != NULL && argv[2] != NULL);
+    for (int a = 5; args_ok && a < argc; a++) {
+		if (strcmp(argv[a], "--hom") == 0) output_hom = 1;
+		else if (strcmp(argv[a], "--hom-lmax") == 0 && a + 1 < argc) { output_hom = 1; hom_lmax = atoi(argv[++a]); }
+		else if (strcmp(argv[a], "--hom-mmin") == 0 && a + 1 < argc) { output_hom = 1; hom_mmin = atoi(argv[++a]); }
+		else args_ok = 0;
+    }
+    if (args_ok) {
 		p = (double)strtod(argv[1], NULL);
 		l_max = (double) strtod(argv[2], NULL);
 		gridfile = argv[3];
 		outdir = argv[4];
-		if (argc == 6) output_hom = 1;
     }else{
-		printf("Usage: h1Lorenz <p> <lmax> <gridfile> <outdir> [--hom]\n");
+		printf("Usage: h1Lorenz <p> <lmax> <gridfile> <outdir> [--hom] [--hom-lmax L] [--hom-mmin M]\n");
 		printf("  --hom: also output the basis of homogeneous solutions (hom_in, hom_out)\n");
+		printf("  --hom-lmax L, --hom-mmin M: output it only for the modes with l <= L and m >= M (each implies --hom)\n");
         exit(0);
     }	
 	
@@ -323,7 +332,7 @@ int main(int argc, char *argv[])
 					H5LTset_attribute_int(file_id, "grid", "rbindex", &orbit.rb_grid_index, 1);
 					
 					// Output the homogeneous fields
-					if(output_hom){
+					if(output_hom && (hom_lmax < 0 || l <= hom_lmax) && m >= hom_mmin){
 						dims[0] = orbit.rb_grid_index + 1;
 						dims[1] = 4*nf*nf;
 

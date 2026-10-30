@@ -27,6 +27,10 @@ For example, after running the ComputeRadialGrid.nb notebook for r0=8.1 you coul
 
 `mpirun -n 2 ./h1Lorenz 15 input/radial_grid_r8.1.h5 data/fields_r8.1/`
 
+Options after `outdir`: `--hom` also writes the basis of homogeneous solutions (datasets `hom_in`, `hom_out`, over the
+whole grid; about 10 MB per even-parity mode on a 6650-point grid), and `--hom-lmax L` / `--hom-mmin M` write it only
+for the modes with l <= L and m >= M (each implies `--hom`).
+
 ### Output
 
 The code output the all the components of the first-order metric perturbation in the Lorenz gauge. For some modes, some of the asymptotic amplitudes are also computed.

@@ -1,3 +1,4 @@
 .sconsign.dblite
 build/
 h1Lorenz
+.build.lock
